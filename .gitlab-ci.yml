@@ -1,0 +1,77 @@
+# external variables
+# DOCKERHUB_USERNAME  username
+# DOCKERHUB_PASSWORD  secret
+# DOCKERHUB_NAMESPACE namespace
+# DOCKERHUB_IMAGE     image
+
+image: docker:18.09.7
+services:
+- docker:dind
+stages:
+- push
+- release
+- publish
+before_script:
+- docker version
+- >
+  echo -n "${CI_JOB_TOKEN}" |
+  docker login --username gitlab-ci-token --password-stdin "${CI_REGISTRY}"
+after_script:
+- docker logout ${CI_REGISTRY}
+
+push master:
+  stage: push
+  only:
+  - master
+  script:
+  - docker image pull $CI_REGISTRY_IMAGE:master || true
+  - >
+    docker build --pull
+    --cache-from $CI_REGISTRY_IMAGE:master
+    --tag $CI_REGISTRY_IMAGE:master
+    .
+  - docker image push $CI_REGISTRY_IMAGE:master
+
+push:
+  stage: push
+  only:
+  - tags
+  script:
+  - docker image pull $CI_REGISTRY_IMAGE:master || true
+  - >
+    docker build --pull
+    --cache-from $CI_REGISTRY_IMAGE:master
+    --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    .
+  - docker image push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+
+release:
+  variables:
+    GIT_STRATEGY: none
+  stage: release
+  only:
+  - tags
+  script:
+  - docker image pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  - >
+    docker image tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:$CI_COMMIT_REF_NAME
+  - >
+    echo "${DOCKERHUB_PASSWORD}" |
+    docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+  - docker image push $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:$CI_COMMIT_REF_NAME
+  - docker logout
+
+publish:
+  stage: publish
+  only:
+  - master
+  script:
+  - >
+    docker container run --rm
+    --volume $PWD/README.md:/var/local/README.md
+    --env DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME
+    --env DOCKERHUB_PASSWORD=$DOCKERHUB_PASSWORD
+    --env DOCKERHUB_NAMESPACE=$DOCKERHUB_NAMESPACE
+    --env DOCKERHUB_IMAGE=$DOCKERHUB_IMAGE
+    daverona/docker-repo-desc
