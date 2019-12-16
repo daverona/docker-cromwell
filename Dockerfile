@@ -9,12 +9,16 @@ RUN apk add --no-cache tzdata \
   && cp "/usr/share/zoneinfo/$APP_TIMEZONE" /etc/localtime \
   && echo "$APP_TIMEZONE" > /etc/timezone
 
-RUN apk add --no-cache bash docker
-
+# Install Cromwell
 RUN mkdir -p /app && cd /app \
   && wget https://github.com/broadinstitute/cromwell/releases/download/$CROMWELL_VERSION/cromwell-$CROMWELL_VERSION.jar \
   && ln -sf cromwell-$CROMWELL_VERSION.jar cromwell.jar \
   && mkdir -p /var/log/cromwell
+
+# Create RSA key pair used to authenticate in Slurm system
+RUN apk add --no-cache bash openssh \
+  && mkdir -p /root/.ssh && chmod 0700 /root/.ssh \
+  && ssh-keygen -b 4096 -t rsa -f /root/.ssh/id_rsa -q -N ""
 
 WORKDIR /var/local
 EXPOSE 8000/tcp
