@@ -18,13 +18,11 @@ RUN mkdir -p /app && cd /app \
 # Create cromwell user and generate RSA key pair possibly used to authenticate
 RUN apk add --no-cache \
     bash \
-    dumb-init \
     openssh \
     gosu --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
   && addgroup -g $CROMWELL_UID cromwell \
   && adduser -h /home/cromwell -s /bin/bash -G cromwell -u $CROMWELL_UID -D cromwell \
-  && gosu cromwell ssh-keygen -b 4096 -t rsa -f /home/cromwell/.ssh/id_rsa -q -N "" \
-  && mkdir -p /var/log/cromwell && chown cromwell:cromwell /var/log/cromwell
+  && gosu cromwell ssh-keygen -b 4096 -t rsa -f /home/cromwell/.ssh/id_rsa -q -N "" 
 
 COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
