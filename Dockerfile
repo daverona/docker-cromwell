@@ -32,4 +32,3 @@ WORKDIR /var/local
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["cromwell", "server"]
-#ENTRYPOINT ["/bin/bash", "-c", "/usr/bin/java ${JAVA_OPTS} -jar /app/cromwell.jar ${CROMWELL_ARGS} ${*}", "--"]
