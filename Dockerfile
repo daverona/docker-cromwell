@@ -18,6 +18,7 @@ RUN mkdir -p /app && cd /app \
 # Create cromwell user and generate RSA key pair possibly used to authenticate
 RUN apk add --no-cache \
     bash \
+    dumb-init \
     openssh \
     gosu --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
   && addgroup -g $CROMWELL_UID cromwell \
