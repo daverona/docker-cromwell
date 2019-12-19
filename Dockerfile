@@ -1,8 +1,9 @@
 FROM openjdk:8u212-jre-alpine3.9
 
 ARG CROMWELL_VERSION=47
+ARG CROMWELL_UID=503
 
-# Setting the system timezone
+# Setting the system time zone
 # @see https://wiki.alpinelinux.org/wiki/Setting_the_timezone
 ARG APP_TIMEZONE=UTC
 RUN apk add --no-cache tzdata \
@@ -15,12 +16,20 @@ RUN mkdir -p /app && cd /app \
   && ln -sf cromwell-$CROMWELL_VERSION.jar cromwell.jar \
   && mkdir -p /var/log/cromwell
 
-# Create RSA key pair used to authenticate in Slurm system
-RUN apk add --no-cache bash openssh \
-  && mkdir -p /root/.ssh && chmod 0700 /root/.ssh \
-  && ssh-keygen -b 4096 -t rsa -f /root/.ssh/id_rsa -q -N ""
+# Create cromwell user and generate RSA key pair possibly used to authenticate
+RUN apk add --no-cache \
+    bash \
+    openssh \
+    gosu --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+  && addgroup -g $CROMWELL_UID cromwell \
+  && adduser -h /home/cromwell -s /bin/bash -G cromwell -u $CROMWELL_UID -D cromwell \
+  && gosu cromwell ssh-keygen -b 4096 -t rsa -f /home/cromwell/.ssh/id_rsa -q -N ""
 
-WORKDIR /var/local
+COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 EXPOSE 8000/tcp
+WORKDIR /var/local
 
-ENTRYPOINT ["/bin/bash", "-c", "/usr/bin/java ${JAVA_OPTS} -jar /app/cromwell.jar ${CROMWELL_ARGS} ${*}", "--"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["cromwell", "server"]
+#ENTRYPOINT ["/bin/bash", "-c", "/usr/bin/java ${JAVA_OPTS} -jar /app/cromwell.jar ${CROMWELL_ARGS} ${*}", "--"]
