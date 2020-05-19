@@ -1,6 +1,6 @@
 FROM openjdk:8u212-jre-alpine3.9
 
-ARG CROMWELL_VERSION=49
+ARG CROMWELL_VERSION=50
 ARG APP_TIMEZONE=UTC
 
 # Install cromwell and dependencies
