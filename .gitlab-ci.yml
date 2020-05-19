@@ -3,22 +3,20 @@
 # DOCKERHUB_NAMESPACE namespace
 # DOCKERHUB_IMAGE     image
 
-image: docker:19.03.8
-
-services:
-  - docker:19.03.8-dind
+default:
+  image: docker:19.03.8
+  services:
+    - docker:19.03.8-dind
+  before_script:
+    - docker version
+    - docker login --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_REGISTRY
+  after_script:
+    - docker logout $CI_REGISTRY
 
 stages:
   - build
   - release
   - publish
-
-before_script:
-  - docker version
-  - docker login --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_REGISTRY
-
-after_script:
-  - docker logout $CI_REGISTRY
 
 build:
   stage: build
@@ -26,7 +24,6 @@ build:
     - branches
     - tags
   script:
-    # $CI_COMMIT_REF_NAME should be set and not be empty.
     - BRANCH_NAME=`[ -z "${CI_COMMIT_REF_NAME##*alpine*}" ] && echo 'alpine' || echo 'master'`
     - echo -e "Given $CI_COMMIT_REF_NAME\nFound $BRANCH_NAME"
     - docker image pull $CI_REGISTRY_IMAGE:$BRANCH_NAME || true
