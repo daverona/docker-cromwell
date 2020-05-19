@@ -9,7 +9,9 @@ This is a repository for Docker images of cromwell.
 
 Available versions are:
 
-* [47](https://gitlab.com/daverona/docker/cromwell/-/blob/47/Dockerfile), [latest](https://gitlab.com/daverona/docker/rdkit/-/blob/latest/Dockerfile)
+* [49](https://gitlab.com/daverona/docker/cromwell/-/blob/49/Dockerfile), [latest](https://gitlab.com/daverona/docker/rdkit/-/blob/latest/Dockerfile)
+* [48](https://gitlab.com/daverona/docker/cromwell/-/blob/48/Dockerfile)
+* [47](https://gitlab.com/daverona/docker/cromwell/-/blob/47/Dockerfile)
 
 ## Installation
 
