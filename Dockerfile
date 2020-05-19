@@ -16,6 +16,8 @@ RUN apk add --no-cache \
   && echo "$APP_TIMEZONE" > /etc/timezone \
   && ssh-keygen -b 4096 -t rsa -f /root/.ssh/id_rsa -q -N ""
 
+ENV CROMWELL_VERSION=$CROMWELL_VERSION
+
 COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 EXPOSE 8000/tcp
