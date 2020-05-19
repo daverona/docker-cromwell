@@ -2,11 +2,13 @@
 set -e
 
 if [ "cromwell" == "$1" ]; then
-  echo "JAVA_OPTS=${JAVA_OPTS}"
-  echo "CROMWELL_ARGS=${CROMWELL_ARGS}"
-  echo "\$@=$@"
+  echo "Received: JAVA_OPTS=${JAVA_OPTS}"
+  echo "Received: CROMWELL_ARGS=${CROMWELL_ARGS}"
+  echo "Received: \$@=$@"
   shift
   [ -z "$*" ] && [ -z "${CROMWELL_ARGS}" ] && CROMWELL_ARGS=server
+  echo "Executing: java ${JAVA_OPTS} -jar /app/cromwell.jar ${CROMWELL_ARGS} \"$@\""
+  echo "--"
   exec java ${JAVA_OPTS} -jar /app/cromwell.jar ${CROMWELL_ARGS} "$@"
 fi
 
