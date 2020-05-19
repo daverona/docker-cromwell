@@ -7,7 +7,7 @@ if [ "cromwell" == "$1" ]; then
   echo "Received: \$@=$@"
   shift
   [ -z "$*" ] && [ -z "${CROMWELL_ARGS}" ] && CROMWELL_ARGS=server
-  echo "Executing: java ${JAVA_OPTS} -jar /app/cromwell.jar ${CROMWELL_ARGS} \"$@\""
+  echo "Executing: java ${JAVA_OPTS} -jar /app/cromwell.jar ${CROMWELL_ARGS} $@"
   echo "--"
   exec java ${JAVA_OPTS} -jar /app/cromwell.jar ${CROMWELL_ARGS} "$@"
 fi
