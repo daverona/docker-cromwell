@@ -3,9 +3,9 @@ FROM openjdk:8u212-jre-alpine3.9
 ARG CROMWELL_VERSION=50
 
 # Install cromwell
-RUN mkdir -p /app && cd /app \
-  && wget --quiet https://github.com/broadinstitute/cromwell/releases/download/$CROMWELL_VERSION/cromwell-$CROMWELL_VERSION.jar \
-  && ln -sf cromwell-$CROMWELL_VERSION.jar cromwell.jar
+COPY conf/ /app/conf/
+RUN wget --quiet --directory-prefix=/app https://github.com/broadinstitute/cromwell/releases/download/$CROMWELL_VERSION/cromwell-$CROMWELL_VERSION.jar \
+  && cd /app && ln -sf cromwell-$CROMWELL_VERSION.jar cromwell.jar
 
 ARG APP_TIMEZONE=UTC
 
