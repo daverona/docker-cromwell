@@ -56,8 +56,8 @@ docker container run --rm \
 
 Then visit [http://localhost:8000](http://localhost:8000).
 
-If you submit a workflow WDL with some input JSON, the result will be
-placed under `data` directory.
+If you submit a workflow (WDL file) with inputs (JSON file), the output will be
+under `data` directory.
 
 ## Advanced Usages
 
@@ -76,8 +76,9 @@ docker container run --rm \
 
 ### Local Backend with Docker
 
-Since you are running cromwell using Docker on your host, you can also run workflows
-using Docker on your host, say `host.example`. To do so:
+Since cromwell runs in Docker container on your host, your host
+is Docker-capable. To run a workflow using Docker on your host, 
+say `host.example`:
 
 ```bash
 docker container run --rm \
@@ -92,8 +93,8 @@ docker container run --rm \
   daverona/cromwell
 ```
 
-To this work, your `app.conf` must contains `submit-docker` key
-under `Local` backend next to `submit` key:
+To this work, the configuration file `app.conf` must contains `submit-docker` key
+under `Local` backend next to `submit` key. Like this:
 
 ```
 submit = "/usr/bin/env bash ${script}"
@@ -109,8 +110,9 @@ submit-docker = """
 """
 ```
 
-You can find an SSH public key under `ssh`. Append the contents of `id_rsa.pub` 
-to `mine`'s `authorized_keys` on `host.example`.
+And you can find an RSA SSH public key at `ssh/id_rsa.pub`. Append it
+to `mine`'s `authorized_keys` on `host.example`, where `mine` is your account
+on your host `host.example`.
 
 ### Slurm Backend on Same Host
 
