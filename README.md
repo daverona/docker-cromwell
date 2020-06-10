@@ -34,14 +34,16 @@ docker container run --rm \
 
 It will show the version of cromwell built in the container.
 
-## Run Server
-
 ```bash
 docker container run --rm \
   --detach \
   --publish 8000:8000 \
   daverona/cromwell
 ```
+
+Then visit [http://localhost:8000](http://localhost:8000).
+
+## Run Server
 
 ```bash
 docker container run --rm \
