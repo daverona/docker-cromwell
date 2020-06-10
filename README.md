@@ -42,10 +42,10 @@ docker container run --rm \
   cromwell --help
 ```
 
-Notice that `cromwell` is an alias to `java -jar /path/to/cromwell.jar`.
-If the command (in this case `cromwell --help`) is omitted after image name,
+Notice that `cromwell` is an alias of `java -jar /path/to/cromwell.jar`.
+If the command (in this case `cromwell --help`) is omitted,
 cromwell will run in server mode.
-I.e. To run cromwell in server mode with default configuration:
+E.g. To run cromwell in server mode with default configuration:
 
 ```bash
 docker container run --rm \
