@@ -119,10 +119,10 @@ on your host `host.example`.
 
 To this work, we assume the following conditions are satisfied:
 
-* Disk volume is shared between Slurm and the one running your cromwell
+* Disk volume is shared between slurm and the one running your cromwell
 * You have an account on the host where `slumrctld` is running
 
-To run a workflow using Slurm:
+To run a workflow using slurm:
 
 ```bash
 docker container run --rm \
@@ -138,8 +138,8 @@ docker container run --rm \
 ```
 
 Note that bind-mount for data is changed to `/var/local`. This is because
-Slurm needs to see what cromwell sees. `slurm.example` is the host running
-`slurmctld`.
+slurm needs to access what cromwell generates and vice versa. 
+`slurm.example` is the host running `slurmctld`.
 
 `app.conf` must contain `slurm` key and optional `submit-docker` key under `Slurm` backend section,
 like this:
