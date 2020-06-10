@@ -96,7 +96,7 @@ docker container run --rm \
 To this work the configuration file `app.conf` must contain `submit-docker` key
 under `Local` backend section next to `submit` key. Like this:
 
-```
+```hocon
 submit = "/usr/bin/env bash ${script}"
 
 submit-docker = """
@@ -123,7 +123,7 @@ To this work, two conditions should be satisfied:
 
 Assuming both are satisfied, let's walk it through.
 
-This case can be similarly configured as the above section. 
+This case can be similarly configured as the above section:
 
 ```bash
 docker container run --rm \
@@ -145,7 +145,22 @@ Slurm needs to see what cromwell sees. `slurm.example` is the host running
 `app.conf` must contain `submit-docker` key under `Slurm` backend section next to
 `submit` key. Like this:
 
-```
+```hocon
+submit = """
+  ssh mine@slurm.example '/bin/bash --login -c " \
+    sbatch \
+      --partition=... \
+      --job-name=${job_name} \
+      --chdir=${cwd} \
+      --output=${out} \
+      --error=${err} \
+      --cpus-per-task=... \
+      --mem-per-cpu=... \
+      --time=... \
+      --wrap=\"/bin/bash ${script}\" \
+  "'
+"""
+
 submit-docker = """
   ssh mine@slurm.example '/bin/bash --login -c " \
     sbatch \
@@ -168,8 +183,8 @@ submit-docker = """
 """
 ```
 
-In the above `mine` is your account on `slurm.example`. Don't forget to 
-append the RSA SSH public key to `mine`'s `authorized_keys` on `slurm.example`.
+`mine` is your account on `slurm.example`. Don't forget to 
+append the RSA SSH public key to `mine`'s `authorized_keys` on `slurm.example` as before.
 
 ## References
 
