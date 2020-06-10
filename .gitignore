@@ -1,9 +1,11 @@
 *
 */
-!conf/
-!conf/**
 !.gitignore
 !.gitlab-ci.yml
-!README.md
 !Dockerfile
 !docker-entrypoint.sh
+!README.md
+!config/
+!config/**
+!storage/
+!storage/**
