@@ -9,10 +9,10 @@ This is a repository for Docker images of [Cromwell](https://github.com/broadins
 
 Available versions are:
 
-* [50](https://gitlab.com/daverona/docker/cromwell/-/blob/50/Dockerfile), [latest](https://gitlab.com/daverona/docker/cromwell/-/blob/50/Dockerfile)
+<!-- * [50](https://gitlab.com/daverona/docker/cromwell/-/blob/50/Dockerfile), [latest](https://gitlab.com/daverona/docker/cromwell/-/blob/50/Dockerfile)
 * [49](https://gitlab.com/daverona/docker/cromwell/-/blob/49/Dockerfile)
-* [48](https://gitlab.com/daverona/docker/cromwell/-/blob/48/Dockerfile)
-* [47](https://gitlab.com/daverona/docker/cromwell/-/blob/47/Dockerfile)
+* [48](https://gitlab.com/daverona/docker/cromwell/-/blob/48/Dockerfile) -->
+* [47](https://gitlab.com/daverona/docker/cromwell/-/blob/47/Dockerfile), [latest](https://gitlab.com/daverona/docker/cromwell/-/blob/47/Dockerfile)
 
 ## Installation
 

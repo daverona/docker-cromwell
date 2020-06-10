@@ -1,8 +1,6 @@
 FROM openjdk:8u212-jre-alpine3.9
 
-ARG CROMWELL_VERSION=50
 ARG APP_TIMEZONE=UTC
-ENV CROMWELL_VERSION=$CROMWELL_VERSION
 ENV LANG=C.UTF-8
 
 # Install cromwell helpers
@@ -17,6 +15,9 @@ RUN apk add --no-cache \
   # Change the default shell
   && sed -i "0s|/bin/ash|/bin/bash|" /etc/passwd \
   && cp /etc/profile /root/.profile
+
+ARG CROMWELL_VERSION=47
+ENV CROMWELL_VERSION=$CROMWELL_VERSION
 
 # Install cromwell
 RUN mkdir -p /app && cd /app \
