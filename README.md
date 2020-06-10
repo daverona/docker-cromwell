@@ -120,7 +120,7 @@ on your host `host.example`.
 To this work, we assume the following conditions are satisfied:
 
 * Disk volume is shared between Slurm and the one running your cromwell
-* You have an account on a host where `slumrctld` is running
+* You have an account on the host where `slumrctld` is running
 
 To run a workflow using Slurm:
 
