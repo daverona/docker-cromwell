@@ -117,14 +117,12 @@ on your host `host.example`.
 
 ### Slurm Backend
 
-To this work, two conditions should be satisfied:
+To this work, we assume the following conditions are satisfied:
 
 * Disk volume is shared between Slurm and the one running your cromwell
 * You have an account on a host where `slumrctld` is running
 
-Let's assume both conditions are satisfied.
-
-This case can be similarly configured as the above section:
+To run a workflow using Slurm:
 
 ```bash
 docker container run --rm \
@@ -143,8 +141,8 @@ Note that bind-mount for data is changed to `/var/local`. This is because
 Slurm needs to see what cromwell sees. `slurm.example` is the host running
 `slurmctld`.
 
-`app.conf` must contain `slurm` key and optional `submit-docker` key under `Slurm` backend section.
-Like this:
+`app.conf` must contain `slurm` key and optional `submit-docker` key under `Slurm` backend section,
+like this:
 
 ```hocon
 submit = """
