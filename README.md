@@ -29,10 +29,42 @@ Run the container:
 ```bash
 docker container run --rm \
   daverona/cromwell \
-  java -jar /app/cromwell.jar 
+  java -jar /app/cromwell.jar --version
 ```
 
 It will show the version of cromwell built in the container.
+
+## Run Server
+
+```bash
+docker container run --rm \
+  --detach \
+  --publish 8000:8000 \
+  daverona/cromwell
+```
+
+```bash
+docker container run --rm \
+  --detach \
+  --volume $PWD/app.conf:/app/app.conf:ro \
+  --publish 8000:8000 \
+  --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
+  --env CROMWELL_ARGS="" \
+  daverona/cromwell
+```
+
+```bash
+docker container run --rm \
+  --detach \
+  --publish 8000:8000 \
+  --volume $PWD/app.conf:/app/app.conf:ro \
+  --volume $PWD/ssh:/root/.ssh \
+  --volume $PWD/data:/var/local \
+  --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
+  --env CROMWELL_ARGS="" \
+  --env EXTERNAL_HOSTS="host1.example,host2.example" \
+  daverona/cromwell
+```
 
 ## References
 
