@@ -104,6 +104,7 @@ submit-docker = """
     docker container run \
       --rm \
       --interactive \
+      --gpus ... \
       --volume ${cwd}:${docker_cwd} \
       ${docker} ${job_shell} < ${script} \
   "'
@@ -155,6 +156,7 @@ submit = """
       --output=${out} \
       --error=${err} \
       --cpus-per-task=... \
+      --gres=gpu:... \
       --mem-per-cpu=... \
       --time=... \
       --wrap=\"/bin/bash ${script}\" \
@@ -168,6 +170,7 @@ submit-docker = """
       --job-name=${job_name} \
       --chdir=${cwd} \
       --cpus-per-task=... \
+      --gres=gpu:... \
       --mem-per-cpu=... \
       --time=... \
       --wrap=\" \
@@ -175,6 +178,7 @@ submit-docker = """
           --cidfile ${docker_cid} \
           --rm \
           --interactive \
+          --gpus ... \
           ${true="--gpus " false="" defined(gpu)}${gpu} \
           --volume ${cwd}:${docker_cwd} \
           ${docker} ${job_shell} < ${script} \
