@@ -9,7 +9,7 @@ fi
 
 if [ "cromwell" == "$1" ]; then
   # Make sure no one can read /root/.ssh 
-  mkdir -p /root/.ssh && chmod -R 700 /root/.ssh
+  mkdir -p /root/.ssh && chmod 700 /root/.ssh
 
   # Scan and add /etc/hosts to known hosts
   etc_hosts=$(sed -e 's/#.*//' -e 's/[[:blank:]]*$//' -e '/^$/d' -e 's/[[:blank:]][[:blank:]]*/ /' /etc/hosts)
