@@ -8,6 +8,7 @@ ENV LANG=C.UTF-8
 # Install cromwell helpers
 RUN apk add --no-cache \
     bash \
+    gettext \
     # gosu --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     openssh \
     tzdata \
