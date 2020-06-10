@@ -16,7 +16,7 @@ RUN apk add --no-cache \
   && sed -i "0s|/bin/ash|/bin/bash|" /etc/passwd \
   && cp /etc/profile /root/.profile
 
-ARG CROMWELL_VERSION=47
+ARG CROMWELL_VERSION=48
 ENV CROMWELL_VERSION=$CROMWELL_VERSION
 
 # Install cromwell
