@@ -119,9 +119,9 @@ on your host `host.example`.
 To this work, two conditions should be satisfied:
 
 * Disk volume is shared between Slurm and the one running your cromwell
-* You have an account where `slumrctld` is running
+* You have an account on a host where `slumrctld` is running
 
-Assuming both are satisfied, let's walk it through.
+Let's assume both conditions are satisfied.
 
 This case can be similarly configured as the above section:
 
@@ -142,8 +142,8 @@ Note that bind-mount for data is changed to `/var/local`. This is because
 Slurm needs to see what cromwell sees. `slurm.example` is the host running
 `slurmctld`.
 
-`app.conf` must contain `submit-docker` key under `Slurm` backend section next to
-`submit` key. Like this:
+`app.conf` must contain `slurm` key and optional `submit-docker` key under `Slurm` backend section.
+Like this:
 
 ```hocon
 submit = """
@@ -184,7 +184,8 @@ submit-docker = """
 ```
 
 `mine` is your account on `slurm.example`. Don't forget to 
-append the RSA SSH public key to `mine`'s `authorized_keys` on `slurm.example` as before.
+append the RSA SSH public key contents to `mine`'s `authorized_keys` on `slurm.example`.
+I.e. append the contents of `ssh/id_rsa.pub` to `~/mine/.ssh/authorized_keys` on `slurm.example`.
 
 ## References
 
