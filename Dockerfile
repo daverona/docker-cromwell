@@ -19,6 +19,7 @@ RUN apk add --no-cache \
   && cp /etc/profile /root/.profile
 
 # Install cromwell
+COPY templates/ /app/templates/
 RUN mkdir -p /app && cd /app \
   && wget --quiet https://github.com/broadinstitute/cromwell/releases/download/$CROMWELL_VERSION/cromwell-$CROMWELL_VERSION.jar \
   && ln -sf cromwell-$CROMWELL_VERSION.jar cromwell.jar
