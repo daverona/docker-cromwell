@@ -5,5 +5,3 @@
 !Dockerfile
 !docker-entrypoint.sh
 !README.md
-!templates/
-!templates/**
