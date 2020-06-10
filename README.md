@@ -34,6 +34,8 @@ docker container run --rm \
 
 It will show the version of cromwell built in the container.
 
+If you like to run as a server with default configuration:
+
 ```bash
 docker container run --rm \
   --detach \
@@ -43,7 +45,9 @@ docker container run --rm \
 
 Then visit [http://localhost:8000](http://localhost:8000).
 
-## Run Server
+## Advanced Usages
+
+If you want to apply your configuration file `app.conf`
 
 ```bash
 docker container run --rm \
@@ -54,6 +58,8 @@ docker container run --rm \
   --env CROMWELL_ARGS="" \
   daverona/cromwell
 ```
+
+If you have an HPC backend running on `hpc.example`:
 
 ```bash
 docker container run --rm \
@@ -67,6 +73,9 @@ docker container run --rm \
   --env EXTERNAL_HOSTS="host1.example,host2.example" \
   daverona/cromwell
 ```
+
+The above will generate SSH key pairs under `$PWD/ssh`. 
+Copy public key to `hpc.example`.
 
 ## References
 
