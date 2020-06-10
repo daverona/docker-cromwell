@@ -3,49 +3,66 @@
 # DOCKERHUB_NAMESPACE namespace
 # DOCKERHUB_IMAGE     image
 
-default:
-  image: docker:19.03.8
-  services:
-    - docker:19.03.8-dind
-  before_script:
-    - docker version
-    - docker login --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_REGISTRY
-  after_script:
-    - docker logout $CI_REGISTRY
-
 stages:
   - build
   - release
   - publish
+  - silly
 
 build:
   stage: build
   only:
-    - branches
-    - tags
+    refs:
+      - branches
+      - tags
+    changes:
+      - Dockerfile
+      - docker-entrypoint.sh
+  image: docker:19.03.8
+  services:
+    - docker:19.03.8-dind
   script:
-    - BRANCH_NAME=`[ -z "${CI_COMMIT_REF_NAME##*alpine*}" ] && echo 'alpine' || echo 'master'`
-    - echo -e "Given $CI_COMMIT_REF_NAME\nFound $BRANCH_NAME"
-    - docker image pull $CI_REGISTRY_IMAGE:$BRANCH_NAME || true
+    #- BRANCH_NAME=`[ -z "${CI_COMMIT_REF_NAME##*alpine*}" ] && echo 'alpine' || echo 'master'`
+    #- echo -e "Given $CI_COMMIT_REF_NAME\nFound $BRANCH_NAME"
+    - docker login --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_REGISTRY
+    - docker image pull $CI_REGISTRY_IMAGE:master || true
     - > 
       docker image build 
       --pull
-      --cache-from $CI_REGISTRY_IMAGE:$BRANCH_NAME
-      --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+      --cache-from $CI_REGISTRY_IMAGE:master
+      --tag $CI_REGISTRY_IMAGE:master
       .   
-    - docker image push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker image push $CI_REGISTRY_IMAGE:master
+    - docker logout $CI_REGISTRY
 
 release:
+  stage: release
+  dependencies:
+    - build
+  only:
+    refs:
+      - tags
+    changes:
+      - Dockerfile
+      - docker-entrypoint.sh
+  image: docker:19.03.8
+  services:
+    - docker:19.03.8-dind
   variables:
     GIT_STRATEGY: none
-  stage: release
-  only:
-    - tags
   script:
-    - docker image pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker login --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_REGISTRY
+    - docker image pull $CI_REGISTRY_IMAGE:master
+    - docker image tag $CI_REGISTRY_IMAGE:master $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker image tag $CI_REGISTRY_IMAGE:master $CI_REGISTRY_IMAGE:latest
+    - docker image push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker image push $CI_REGISTRY_IMAGE:latest
+    - docker logout $CI_REGISTRY
     - docker image tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:$CI_COMMIT_REF_NAME
+    - docker image tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:latest
     - docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
     - docker image push $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:$CI_COMMIT_REF_NAME
+    - docker image push $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:latest
     - docker logout
 
 publish:
@@ -55,6 +72,9 @@ publish:
       - master
     changes:
       - README.md
+  image: docker:19.03.8
+  services:
+    - docker:19.03.8-dind
   script:
     - > 
       docker container run 
@@ -65,3 +85,8 @@ publish:
       --env DOCKERHUB_NAMESPACE=$DOCKERHUB_NAMESPACE
       --env DOCKERHUB_IMAGE=$DOCKERHUB_IMAGE
       daverona/docker-repo-desc
+
+silly:
+  stage: silly
+  script:
+    - echo "You silly."
