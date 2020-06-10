@@ -43,7 +43,8 @@ docker container run --rm \
 ```
 
 Notice that `cromwell` is an alias to `java -jar /path/to/cromwell.jar`.
-If you don't specify anything, cromwell will run in server mode.
+If the command (in this case `cromwell --help`) is omitted after image name,
+cromwell will run in server mode.
 I.e. To run cromwell in server mode with default configuration:
 
 ```bash
@@ -55,13 +56,12 @@ docker container run --rm \
 ```
 
 Then visit [http://localhost:8000](http://localhost:8000).
-
 If you submit a workflow (WDL file) with inputs (JSON file), the output will be
 under `data` directory.
 
 ## Advanced Usages
 
-To run cromwell with a configuration file `app.conf`:
+To run cromwell with a configuration file, say `app.conf`:
 
 ```bash
 docker container run --rm \
@@ -76,7 +76,7 @@ docker container run --rm \
 
 ### Local Backend with Docker
 
-Since cromwell runs in Docker container on your host, your host
+Since cromwell runs in a Docker container on your host, your host
 is Docker-capable. To run a workflow using Docker on your host, 
 say `host.example`:
 
@@ -93,8 +93,8 @@ docker container run --rm \
   daverona/cromwell
 ```
 
-To this work, the configuration file `app.conf` must contains `submit-docker` key
-under `Local` backend next to `submit` key. Like this:
+To this work the configuration file `app.conf` must contain `submit-docker` key
+under `Local` backend section next to `submit` key. Like this:
 
 ```
 submit = "/usr/bin/env bash ${script}"
@@ -116,23 +116,46 @@ on your host `host.example`.
 
 ### Slurm Backend on Same Host
 
-If you have an HPC backend running on `hpc.example`:
+This case can be similarly configured as the above section. 
 
 ```bash
 docker container run --rm \
   --detach \
-  --publish 8000:8000 \
   --volume $PWD/app.conf:/app/app.conf:ro \
   --volume $PWD/ssh:/root/.ssh \
-  --volume $PWD/data:/var/local \
+  --volume /var/local:/var/local \
+  --publish 8000:8000 \
   --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
   --env CROMWELL_ARGS="" \
-  --env EXTERNAL_HOSTS="host1.example,host2.example" \
+  --env EXTERNAL_HOSTS="host.example" \
   daverona/cromwell
 ```
 
-The above will generate SSH key pairs under `$PWD/ssh`. 
-Copy public key to `hpc.example`.
+`app.conf` must contain `submit-docker` key under `Slurm` backend section next to
+`submit` key. Like this:
+
+```
+submit-docker = """
+  ssh mine@host.example '/bin/bash --login -c " \
+    sbatch \
+      --partition=... \
+      --job-name=${job_name} \
+      --chdir=${cwd} \
+      --cpus-per-task=... \
+      --mem-per-cpu=... \
+      --time=... \
+      --wrap=\" \
+        docker container run \
+          --cidfile ${docker_cid} \
+          --rm \
+          --interactive \
+          ${true="--gpus " false="" defined(gpu)}${gpu} \
+          --volume ${cwd}:${docker_cwd} \
+          ${docker} ${job_shell} < ${script} \
+      \" \
+  "'
+"""
+```
 
 ## References
 
