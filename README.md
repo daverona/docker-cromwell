@@ -177,7 +177,6 @@ submit-docker = """
           --rm \
           --interactive \
           --gpus ... \
-          ${true="--gpus " false="" defined(gpu)}${gpu} \
           --volume ${cwd}:${docker_cwd} \
           ${docker} ${job_shell} < ${script} \
       \" \
