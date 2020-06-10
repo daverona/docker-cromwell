@@ -114,7 +114,14 @@ And you can find an RSA SSH public key at `ssh/id_rsa.pub`. Append it
 to `mine`'s `authorized_keys` on `host.example`, where `mine` is your account
 on your host `host.example`.
 
-### Slurm Backend on Same Host
+### Slurm Backend
+
+To this work, two conditions should be satisfied:
+
+* Disk volume is shared between Slurm and the one running your cromwell
+* You have an account where `slumrctld` is running
+
+Assuming both are satisfied, let's walk it through.
 
 This case can be similarly configured as the above section. 
 
@@ -127,16 +134,20 @@ docker container run --rm \
   --publish 8000:8000 \
   --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
   --env CROMWELL_ARGS="" \
-  --env EXTERNAL_HOSTS="host.example" \
+  --env EXTERNAL_HOSTS="slurm.example" \
   daverona/cromwell
 ```
+
+Note that bind-mount for data is changed to `/var/local`. This is because
+Slurm needs to see what cromwell sees. `slurm.example` is the host running
+`slurmctld`.
 
 `app.conf` must contain `submit-docker` key under `Slurm` backend section next to
 `submit` key. Like this:
 
 ```
 submit-docker = """
-  ssh mine@host.example '/bin/bash --login -c " \
+  ssh mine@slurm.example '/bin/bash --login -c " \
     sbatch \
       --partition=... \
       --job-name=${job_name} \
@@ -156,6 +167,9 @@ submit-docker = """
   "'
 """
 ```
+
+In the above `mine` is your account on `slurm.example`. Don't forget to 
+append the RSA SSH public key to `mine`'s `authorized_keys` on `slurm.example`.
 
 ## References
 
