@@ -35,8 +35,6 @@ build:
 
 release:
   stage: release
-  dependencies:
-    - build
   only:
     refs:
       - tags
