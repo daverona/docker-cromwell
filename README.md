@@ -183,5 +183,5 @@ I.e. append the contents of `ssh/id_rsa.pub` to `~/mine/.ssh/authorized_keys` on
 
 ## References
 
-* [https://github.com/broadinstitute/cromwell](https://github.com/broadinstitute/cromwell)
-* [https://cromwell.readthedocs.io/en/stable/](https://cromwell.readthedocs.io/en/stable/)
+* Cromwell: [https://cromwell.readthedocs.io/en/stable/](https://cromwell.readthedocs.io/en/stable/)
+* Cromwell repository: [https://github.com/broadinstitute/cromwell](https://github.com/broadinstitute/cromwell)
