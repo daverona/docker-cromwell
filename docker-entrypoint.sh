@@ -1,12 +1,6 @@
 #!/bin/bash
 set -e
 
-# Set the system time zone
-if [ ! -z "$APP_TIMEZONE" ]; then
-  cp "/usr/share/zoneinfo/$APP_TIMEZONE" /etc/localtime
-  echo "$APP_TIMEZONE" > /etc/timezone
-fi
-
 if [ "cromwell" == "$1" ]; then
   # Make sure no one can read /root/.ssh 
   mkdir -p /root/.ssh && chmod 700 /root/.ssh
@@ -30,9 +24,6 @@ if [ "cromwell" == "$1" ]; then
   [ ! -f "/root/.ssh/id_ed25519" ] && ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -q -N ""
 
   # Start cromwell (in server mode by default)
-  echo "Received: JAVA_OPTS=${JAVA_OPTS}"
-  echo "Received: CROMWELL_ARGS=${CROMWELL_ARGS}"
-  echo "Received: \$@=$@"
   shift
   [ -z "$*" ] && [ -z "${CROMWELL_ARGS}" ] && CROMWELL_ARGS=server
   echo "Executing: java ${JAVA_OPTS} -jar /app/cromwell-$CROMWELL_VERSION.jar ${CROMWELL_ARGS} $@"

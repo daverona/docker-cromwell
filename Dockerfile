@@ -1,6 +1,5 @@
 FROM openjdk:8u212-jre-alpine3.9
 
-ARG APP_TIMEZONE=UTC
 ENV LANG=C.UTF-8
 
 # Install cromwell helpers
@@ -9,9 +8,6 @@ RUN apk add --no-cache \
     # gosu --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     openssh \
     tzdata \
-  # Set the system time zone
-  && cp "/usr/share/zoneinfo/$APP_TIMEZONE" /etc/localtime \
-  && echo "$APP_TIMEZONE" > /etc/timezone \
   # Change the default shell
   && sed -i "0s|/bin/ash|/bin/bash|" /etc/passwd \
   && cp /etc/profile /root/.profile
