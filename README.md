@@ -22,35 +22,27 @@ Run the container:
 ```bash
 docker container run --rm \
   daverona/cromwell \
-    cromwell --version
-```
-
-It will show the version of cromwell built in the container.
-
-Note that `cromwell` in the command is an *alias* of `java -jar /path/to/cromwell.jar`.
-
-To see the help text:
-
-```bash
-docker container run --rm \
-  daverona/cromwell \
     cromwell --help
 ```
 
-To run cromwell in server mode with default configuration:
+It will show how to use cromwell.
+
+Note that `cromwell` in the command is an *alias* of `java -jar /path/to/cromwell.jar`.
+
+Run run cromwell in server mode with default configuration:
 
 ```bash
 docker container run --rm \
   --detach \
-  --publish 8000:8000 \
+  --publish 80:8000 \
   --volume $PWD/data:/var/local \
   daverona/cromwell
 ```
 
-Then visit [http://localhost:8000](http://localhost:8000).
+Then visit [http://localhost](http://localhost).
 If you submit a workflow, the output will be generated under `data` directory on the host.
 
-Note that if the command is omitted, cromwell runs in server mode by default.
+Note that the command is *omitted*. If the command is omitted, cromwell runs in server mode by default.
 
 ## Advanced Usages
 
@@ -61,7 +53,7 @@ docker container run --rm \
   --detach \
   --volume $PWD/app.conf:/app/app.conf:ro \
   --volume $PWD/data:/var/local \
-  --publish 8000:8000 \
+  --publish 80:8000 \
   --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
   --env CROMWELL_ARGS="" \
   daverona/cromwell
@@ -79,7 +71,7 @@ docker container run --rm \
   --volume $PWD/app.conf:/app/app.conf:ro \
   --volume $PWD/ssh:/root/.ssh \
   --volume $PWD/data:/var/local \
-  --publish 8000:8000 \
+  --publish 80:8000 \
   --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
   --env CROMWELL_ARGS="" \
   --env EXTERNAL_HOSTS="host.example" \
@@ -123,7 +115,7 @@ docker container run --rm \
   --volume $PWD/app.conf:/app/app.conf:ro \
   --volume $PWD/ssh:/root/.ssh \
   --volume /var/local:/var/local \
-  --publish 8000:8000 \
+  --publish 80:8000 \
   --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
   --env CROMWELL_ARGS="" \
   --env EXTERNAL_HOSTS="slurm.example" \
