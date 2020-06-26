@@ -15,14 +15,6 @@ Available versions are:
 * [48](https://gitlab.com/daverona/docker/cromwell/-/blob/48/Dockerfile)
 * [47](https://gitlab.com/daverona/docker/cromwell/-/blob/47/Dockerfile)
 
-## Installation
-
-Pull the image from Docker Hub repository:
-
-```bash
-docker image pull daverona/cromwell
-```
-
 ## Quick Start
 
 Run the container:
