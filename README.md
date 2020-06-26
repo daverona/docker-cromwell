@@ -22,23 +22,24 @@ Run the container:
 ```bash
 docker container run --rm \
   daverona/cromwell \
-  cromwell --version
+    cromwell --version
 ```
 
 It will show the version of cromwell built in the container.
+
+Note that `cromwell` is an alias of `java -jar /path/to/cromwell.jar`.
+If the command (in this case `cromwell --help`) is omitted,
+cromwell will run in server mode.
 
 To see the help text:
 
 ```bash
 docker container run --rm \
   daverona/cromwell \
-  cromwell --help
+    cromwell --help
 ```
 
-Notice that `cromwell` is an alias of `java -jar /path/to/cromwell.jar`.
-If the command (in this case `cromwell --help`) is omitted,
-cromwell will run in server mode.
-E.g. To run cromwell in server mode with default configuration:
+To run cromwell in server mode with default configuration:
 
 ```bash
 docker container run --rm \
@@ -49,8 +50,7 @@ docker container run --rm \
 ```
 
 Then visit [http://localhost:8000](http://localhost:8000).
-If you submit a workflow (WDL file) with inputs (JSON file), the output will be
-under `data` directory.
+If you submit a workflow, the output will be generated under `data` directory on the host.
 
 ## Advanced Usages
 
@@ -69,8 +69,8 @@ docker container run --rm \
 
 ### Local Backend with Docker
 
-Since cromwell runs in a Docker container on your host, your host
-is Docker-capable. To run a workflow using Docker on your host, 
+Since cromwell runs in a Docker container on your host, the host
+obviously has Docker server installed. To run a workflow using Docker on the host, 
 say `host.example`:
 
 ```bash
@@ -86,7 +86,7 @@ docker container run --rm \
   daverona/cromwell
 ```
 
-To this work the configuration file `app.conf` must contain `submit-docker` key
+In this case the configuration file `app.conf` must contain `submit-docker` key
 under `Local` backend section next to `submit` key. Like this:
 
 ```hocon
@@ -110,7 +110,7 @@ on your host `host.example`.
 
 ### Slurm Backend
 
-To this work, we assume the following conditions are satisfied:
+For this To work, we assume the following conditions are satisfied:
 
 * Disk volume is shared between slurm and the one running your cromwell
 * You have an account on the host where `slumrctld` is running
