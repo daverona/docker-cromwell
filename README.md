@@ -27,9 +27,7 @@ docker container run --rm \
 
 It will show the version of cromwell built in the container.
 
-Note that `cromwell` is an alias of `java -jar /path/to/cromwell.jar`.
-If the command (in this case `cromwell --help`) is omitted,
-cromwell will run in server mode.
+Note that `cromwell` in the command is an *alias* of `java -jar /path/to/cromwell.jar`.
 
 To see the help text:
 
@@ -51,6 +49,8 @@ docker container run --rm \
 
 Then visit [http://localhost:8000](http://localhost:8000).
 If you submit a workflow, the output will be generated under `data` directory on the host.
+
+Note that if the command is omitted, cromwell runs in server mode by default.
 
 ## Advanced Usages
 
