@@ -1,16 +1,23 @@
 FROM openjdk:8u212-jre-alpine3.9
 
 ENV LANG=C.UTF-8
+ARG CROMWELL_UID=1001
+ARG CROMWELL_GID=1001
 
-# Install cromwell helpers
+# Install cromwell dependencies
 RUN apk add --no-cache \
     bash \
-    # gosu --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     openssh \
+    sudo \
     tzdata \
-  # Change the default shell
-  && sed -i "0s|/bin/ash|/bin/bash|" /etc/passwd \
-  && cp /etc/profile /root/.profile
+  # Create a user account "cromwell"
+  && addgroup -g ${CROMWELL_GID} cromwell \
+  && adduser -D -s /bin/bash -G cromwell -u ${CROMWELL_UID} cromwell \
+  && cp /etc/profile /home/cromwell/.profile \
+  && mkdir -p /home/cromwell/.ssh && chmod 700 /home/cromwell/.ssh \
+  # Create a work directory
+  && mkdir -p /data \
+  && chown -R cromwell:cromwell /home/cromwell /data
 
 ARG CROMWELL_VERSION=51
 ENV CROMWELL_VERSION=$CROMWELL_VERSION
@@ -24,7 +31,7 @@ RUN mkdir -p /app && cd /app \
 COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 EXPOSE 8000/tcp
-WORKDIR /var/local
+WORKDIR /data
+USER cromwell
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["cromwell"]
