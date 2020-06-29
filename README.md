@@ -47,11 +47,12 @@ If you submit a workflow, the output will be generated under `data` directory on
 Note that if the command is *omitted*, cromwell runs in *server* mode by default.
 
 > Note that there is a user `cromwell` in the container who runs the cromwell instance.
-> And note that this `cromwell` user in the container is set to the user on the host running the command.
+> And note that `cromwell` user in the container is set to the user on the host running the command.
 > Therefore the host directory (i.e. `$PWD/data`), which is bind-mounted to `/data` in the container,
 > must be writable by the user on the host.
 > If you have a specific user on the host to run cromwell, 
-> replace `--user` option with the user's uid and gid.
+> replace `--user` option with the user's uid and gid
+> and make sure whatever directory mounted to `/data` in the container is writable by the user.
 
 ## Advanced Usages
 
