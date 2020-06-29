@@ -48,9 +48,8 @@ Make sure that `$PWD/data` is readable/writable by the user running the above co
 (Otherwise cromwell won't be able to write any output to `$PWD/data` on the host.)
 Note that if the command is *omitted*, cromwell runs in *server* mode by default.
 
-> Note that there is a user `cromwell` in the container to run a cromwell instance
-> and this user is mapped by the host user running the above command.
-> `cromwell` user in the container reads and writes to `/data` in the container, 
+> Note that the user running the above command maps to a user `cromwell` in the container
+> which runs a cromwell instance. This `cromwell` user reads and writes to `/data` in the container, 
 > to which `$PWD/data` on the host bind-mounts. Therefore the user on the host
 > must be able to read and write to `$PWD/data` on the host.
 > If you have a specific user on the host to run cromwell, 
