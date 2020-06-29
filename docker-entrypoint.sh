@@ -6,17 +6,6 @@ if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
   cyan='\033[1;36m'
   reset='\033[0m'
 
-  ([ -z "${CROMWELL_KEYNAME}" ] || [ -z "${CROMWELL_PRIVKEY}" ]) \
-  && echo -e "${red}CROMWELL_KEYNAME and/or CROMWELL_PRIVKEY are not given!${reset}"
-
-  # Create private key from environment variable
-  if [ ! -z "${CROMWELL_KEYNAME}" ] && [ ! -z "${CROMWELL_PRIVKEY}" ]; then
-    echo "${CROMWELL_PRIVKEY}" > "/root/.ssh/${CROMWELL_KEYNAME}"
-    chmod 600 "/root/.ssh/${CROMWELL_KEYNAME}"
-    unset CROMWELL_KEYNAME
-    unset CROMWELL_PRIVKEY
-  fi
-
   # Start cromwell (in server mode by default)
   if [ $# -eq 0 ]; then
     [ -z "$*" ] && [ -z "${CROMWELL_ARGS}" ] && CROMWELL_ARGS=server

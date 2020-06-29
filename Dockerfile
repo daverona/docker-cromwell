@@ -10,8 +10,12 @@ RUN apk add --no-cache \
   # Change root's default shell to bash
   && sed -i "0s|/bin/ash|/bin/bash|" /etc/passwd \
   && cp /etc/profile /root/.profile \
-  # Create directories
+  # Create keys and data directories
   && mkdir -p /root/.ssh && chmod 700 /root/.ssh \
+  && ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -N "" -b 4096 \
+  && ssh-keygen -t dsa -f /root/.ssh/id_dsa -q -N "" \
+  && ssh-keygen -t ecdsa -f /root/.ssh/id_ecdsa -q -N "" -b 521 \
+  && ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -q -N "" \
   && mkdir -p /data
 
 ARG CROMWELL_VERSION=51
