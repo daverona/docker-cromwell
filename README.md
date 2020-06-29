@@ -74,7 +74,7 @@ docker container run --rm \
 ### Local Backend with Docker
 
 Since cromwell runs in a Docker container on your host, your host
-is surely able to run a workflow which uses Docker image.
+is surely able to run workflows using Docker images.
 
 Make sure your `app.conf` contains the following in `Local` section:
 
