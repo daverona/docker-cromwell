@@ -74,30 +74,18 @@ docker container run --rm \
 ### Local Backend with Docker
 
 Since cromwell runs in a Docker container on your host, the host
-obviously has Docker server installed. To run a workflow using Docker on the host, 
-say `host.example`:
+is surely able to run a workflow which uses Docker image on the host too.
 
-```bash
-docker container run --rm \
-  --detach \
-  --volume $PWD/app.conf:/app/app.conf:ro \
-  --volume $PWD/ssh:/root/.ssh \
-  --volume $PWD/data:/var/local \
-  --publish 80:8000 \
-  --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
-  --env CROMWELL_ARGS="" \
-  --env EXTERNAL_HOSTS="host.example" \
-  daverona/cromwell
-```
-
-In this case the configuration file `app.conf` must contain `submit-docker` key
-under `Local` backend section next to `submit` key. Like this:
+Make sure your `app.conf` contains the following in `Local` section:
 
 ```hocon
 submit = "/usr/bin/env bash ${script}"
 
 submit-docker = """
-  ssh mine@host.example '/bin/bash --login -c " \
+  ssh-keyscan -H host.example 2>/dev/null >> /home/cromwell/.ssh/known_hosts \
+  && sort /home/cromwell/.ssh/known_hosts | uniq > /tmp/known_hosts.unique \
+  && mv /tmp/known_hosts.unique /home/cromwell/.ssh/known_hosts \
+  && ssh tom@host.example '/bin/bash --login -c " \
     docker container run \
       --rm \
       --interactive \
@@ -108,9 +96,24 @@ submit-docker = """
 """
 ```
 
-And you can find an RSA SSH public key at `ssh/id_rsa.pub`. Append it
-to `mine`'s `authorized_keys` on `host.example`, where `mine` is your account
-on your host `host.example`.
+> Please replace `host.example` and `tom` with yours in the above example.
+> *Never* use `localhost` or any loopback to specify your host.
+
+Run a container to allow workflows to use Docker images on the host:
+
+```bash
+docker container run --rm \
+  --detach \
+  --user "$(id -u):$(id -g)" \
+  --publish 80:8000 \
+  --env CROMWELL_KEYNAME="id_rsa" \
+  --env CROMWELL_PRIVKEY="$(cat ${HOME}/.ssh/id_rsa)" \
+  --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
+  --volume $PWD/app.conf:/app/app.conf:ro \
+  --volume $PWD/data:$PWD/data \
+  --workdir $PWD/data \
+  daverona/cromwell
+```
 
 ### Slurm Backend
 
