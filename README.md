@@ -58,7 +58,7 @@ Note that if the command is *omitted*, cromwell runs in *server* mode by default
 
 ## Advanced Usages
 
-To run cromwell with a configuration file, say `app.conf`:
+To use a custom configuration file, say `app.conf`, run a container:
 
 ```bash
 docker container run --rm \
@@ -73,8 +73,8 @@ docker container run --rm \
 
 ### Local Backend with Docker
 
-Since cromwell runs in a Docker container on your host, the host
-is surely able to run a workflow which uses Docker image on the host too.
+Since cromwell runs in a Docker container on your host, your host
+is surely able to run a workflow which uses Docker image.
 
 Make sure your `app.conf` contains the following in `Local` section:
 
@@ -96,8 +96,10 @@ submit-docker = """
 """
 ```
 
-> Please replace `host.example` and `tom` with yours in the above example.
-> *Never* use `localhost` or any loopback to specify your host.
+> Please replace `host.example` and `tom` with your host and your username on the host 
+> in the above example. No matter what, *never* use `localhost` or any loopback to specify 
+> your host. This `localhost` or loopbacks are not your host but the container itself
+> *in* the container.
 
 Run a container to allow workflows to use Docker images on the host:
 
