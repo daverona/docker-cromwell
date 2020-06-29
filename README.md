@@ -31,6 +31,11 @@ It will show how to use cromwell. Note that `cromwell` on the last line is an *a
 java ${JAVA_OPTS} -jar /app/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}
 ```
 
+
+## Usages
+
+### Local Backend
+
 Run cromwell in server mode with default configuration:
 
 ```bash
@@ -56,7 +61,6 @@ Note that if the command is *omitted*, cromwell runs in *server* mode by default
 > replace `--user` option with the user's uid and gid
 > and make sure whatever directory mounted to `/data` in the container is accesible by the user.
 
-## Advanced Usages
 
 To use a custom configuration file, say `app.conf`, run a container:
 
@@ -69,6 +73,18 @@ docker container run --rm \
   --volume $PWD/app.conf:/app/app.conf:ro \
   --volume $PWD/data:/data \
   daverona/cromwell
+```
+
+## Advanced Usages
+
+### Image Building
+
+```bash
+docker image build \
+  --build-arg CROMWELL_UID="$(id -u)" \
+  --build-arg CROMWELL_GID="$(id -g)" \
+  --tag daverona/cromwell \
+  .
 ```
 
 ### Local Backend with Docker
@@ -196,6 +212,10 @@ submit-docker = """
 `mine` is your account on `slurm.example`. Don't forget to 
 append the RSA SSH public key contents to `mine`'s `authorized_keys` on `slurm.example`.
 I.e. append the contents of `ssh/id_rsa.pub` to `~/mine/.ssh/authorized_keys` on `slurm.example`.
+
+## Building
+
+
 
 ## References
 

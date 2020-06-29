@@ -2,7 +2,6 @@
 set -e
 
 if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
-  red='\033[1;31m'
   cyan='\033[1;36m'
   reset='\033[0m'
 
