@@ -48,7 +48,7 @@ Make sure that `$PWD/data` is readable/writable by the user running the above co
 (Otherwise cromwell won't be able to write any output to `$PWD/data` on the host.)
 Note that if the command is *omitted*, cromwell runs in *server* mode by default.
 
-> Note that the user running the above command maps to a user `cromwell` in the container
+> Note that the user running the above command maps to a user `cromwell` in the container,
 > which runs a cromwell instance. This `cromwell` user reads and writes to `/data` in the container, 
 > to which `$PWD/data` on the host bind-mounts. Therefore the user on the host
 > must be able to read and write to `$PWD/data` on the host.
@@ -74,7 +74,7 @@ docker container run --rm \
 ### Local Backend with Docker
 
 Since cromwell runs in a Docker container on your host, your host
-is surely able to run workflows using Docker images.
+is surely able to run workflows which utilize Docker images.
 
 Make sure your `app.conf` contains the following in `Local` section:
 
@@ -96,11 +96,10 @@ submit-docker = """
 """
 ```
 
-> Replace `host.example` and `tom` with your host and your username on the host 
+> Replace `host.example` and `tom` with your host name and your username on the host 
 > in the above example. *Never* use `localhost` or any loopback to specify 
-> your host. `localhost` and loopbacks in the container are not your host but 
-> the container itself. And this container is *not* cromwell container *but* 
-> workflow's containers.
+> your host. `localhost` and loopbacks in the container are *not* your host *but* 
+> the container itself.
 
 Run a cromwell container to allow workflows to use Docker images on the host:
 
