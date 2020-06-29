@@ -50,11 +50,12 @@ Note that if the command is *omitted*, cromwell runs in *server* mode by default
 
 > Note that there is a user `cromwell` in the container to run a cromwell instance
 > and this user is mapped by the host user running the above command.
-> This user `cromwell` needs to read and write to `/data`, Therefore the host directory (i.e. `$PWD/data`), which is bind-mounted to `/data` in the container,
-> must be readable/writable by the user on the host.
+> `cromwell` user in the container reads and writes to `/data` in the container, 
+> to which `$PWD/data` on the host bind-mounts. Therefore the user on the host
+> must be able to read and write to `$PWD/data` on the host.
 > If you have a specific user on the host to run cromwell, 
 > replace `--user` option with the user's uid and gid
-> and make sure whatever directory mounted to `/data` in the container is writable by the user.
+> and make sure whatever directory mounted to `/data` in the container is accesible by the user.
 
 ## Advanced Usages
 
