@@ -26,9 +26,9 @@ if [ "cromwell" == "$1" ]; then
   # Start cromwell (in server mode by default)
   shift
   [ -z "$*" ] && [ -z "${CROMWELL_ARGS}" ] && CROMWELL_ARGS=server
-  echo "Executing: java ${JAVA_OPTS} -jar /app/cromwell-$CROMWELL_VERSION.jar ${CROMWELL_ARGS} $@"
+  echo "Executing: java ${JAVA_OPTS} -jar /app/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS} $@"
   echo "--"
-  exec java ${JAVA_OPTS} -jar /app/cromwell-$CROMWELL_VERSION.jar ${CROMWELL_ARGS} "$@"
+  exec java ${JAVA_OPTS} -jar /app/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS} "$@"
 fi
 
 exec "$@"

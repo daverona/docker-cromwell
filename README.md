@@ -25,9 +25,12 @@ docker container run --rm \
     cromwell --help
 ```
 
-It will show how to use cromwell.
+It will show how to use cromwell.  
+Note that `cromwell` in the command is an *alias* of:
 
-Note that `cromwell` in the command is an *alias* of `java -jar /path/to/cromwell.jar`.
+```bash
+java ${JAVA_OPTS} -jar /app/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}
+```
 
 Run run cromwell in server mode with default configuration:
 
@@ -41,8 +44,7 @@ docker container run --rm \
 
 Then visit [http://localhost](http://localhost).
 If you submit a workflow, the output will be generated under `data` directory on the host.
-
-Note that the command is *omitted*. If the command is omitted, cromwell runs in server mode by default.
+Note that the command is *omitted*. If the command is omitted, cromwell runs in *server* mode by default.
 
 ## Advanced Usages
 
