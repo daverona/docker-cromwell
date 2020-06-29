@@ -25,8 +25,7 @@ docker container run --rm \
     cromwell --help
 ```
 
-It will show how to use cromwell.  
-Note that `cromwell` in the command is an *alias* of:
+It will show how to use cromwell. Note that `cromwell` in the command is an *alias* of:
 
 ```bash
 java ${JAVA_OPTS} -jar /app/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}
