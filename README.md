@@ -117,6 +117,8 @@ docker container run --rm \
   daverona/cromwell
 ```
 
+Make sure that `$PWD/data` is owned by the user running the above command.
+
 ### Slurm Backend
 
 For this To work, we assume the following conditions are satisfied:

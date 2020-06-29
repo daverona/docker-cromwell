@@ -7,7 +7,7 @@ if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
   reset='\033[0m'
 
   # Make sure that cromwell has what he needs
-  sudo chown cromwell:cromwell "${PWD}"
+  # sudo chown cromwell:cromwell "${PWD}"
 
   ([ -z "${CROMWELL_KEYNAME}" ] || [ -z "${CROMWELL_PRIVKEY}" ]) \
   && echo -e "${red}CROMWELL_KEYNAME and/or CROMWELL_PRIVKEY are not given!${reset}"
