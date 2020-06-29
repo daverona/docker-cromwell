@@ -99,9 +99,10 @@ submit-docker = """
 > Replace `host.example` and `tom` with your host and your username on the host 
 > in the above example. *Never* use `localhost` or any loopback to specify 
 > your host. `localhost` and loopbacks in the container are not your host but 
-> the container itself.
+> the container itself. And this container is *not* cromwell container *but* 
+> workflow's containers.
 
-Run a container to allow workflows to use Docker images on the host:
+Run a cromwell container to allow workflows to use Docker images on the host:
 
 ```bash
 docker container run --rm \
@@ -117,7 +118,12 @@ docker container run --rm \
   daverona/cromwell
 ```
 
-Make sure that `$PWD/data` is owned by the user running the above command.
+Make sure that `$PWD/data` is readable/writable by the user running the above command.
+
+> Note that the data directory in cromwell container (i.e. `$PWD/data` on the right hand side), 
+> which cromwell reads and writes to, is the same as the data directory on the host (`$PWD/data` on the left hand side). 
+> This restriction is to share a same readable/writable directory between cromwell container and workflow's containers.
+> A workflow's containers point this directory by using `${cwd}` in `app.conf` file.
 
 ### Slurm Backend
 
