@@ -46,6 +46,12 @@ Then visit [http://localhost](http://localhost).
 If you submit a workflow, the output will be generated under `data` directory on the host.
 Note that if the command is *omitted*, cromwell runs in *server* mode by default.
 
+> Note that the host directory (i.e. `$PWD/data`), 
+> which is bind-mounted to `/data` in the container,
+> must be writable by whoever runs the command. Otherwise cromwell won't be able to run.
+> If you have a specific user on the host to run cromwell, 
+> replace `--user` option with the user's uid and gid.
+
 ## Advanced Usages
 
 To run cromwell with a configuration file, say `app.conf`:
