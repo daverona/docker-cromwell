@@ -25,7 +25,7 @@ docker container run --rm \
     cromwell --help
 ```
 
-It will show how to use cromwell. Note that `cromwell` in the command is an *alias* of:
+It will show how to use cromwell. Note that `cromwell` on the last line is an *alias* of:
 
 ```bash
 java ${JAVA_OPTS} -jar /app/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}
@@ -48,9 +48,9 @@ Make sure that `$PWD/data` is readable/writable by the user running the above co
 (Otherwise cromwell won't be able to write any output to `$PWD/data` on the host.)
 Note that if the command is *omitted*, cromwell runs in *server* mode by default.
 
-> Note that there is a user `cromwell` in the container which runs the cromwell instance.
-> And note that `cromwell` user in the container is set to the user on the host running the command.
-> Therefore the host directory (i.e. `$PWD/data`), which is bind-mounted to `/data` in the container,
+> Note that there is a user `cromwell` in the container to run a cromwell instance
+> and this user is mapped by the host user running the above command.
+> This user `cromwell` needs to read and write to `/data`, Therefore the host directory (i.e. `$PWD/data`), which is bind-mounted to `/data` in the container,
 > must be readable/writable by the user on the host.
 > If you have a specific user on the host to run cromwell, 
 > replace `--user` option with the user's uid and gid
