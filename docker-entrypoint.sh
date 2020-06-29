@@ -13,7 +13,7 @@ if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
   if [ ! -z "${CROMWELL_KEYNAME}" ] && [ ! -z "${CROMWELL_PRIVKEY}" ]; then
     echo "${CROMWELL_PRIVKEY}" > "/root/.ssh/${CROMWELL_KEYNAME}"
     chmod 600 "/root/.ssh/${CROMWELL_KEYNAME}"
-    unset CROMWELL_KEYFILE
+    unset CROMWELL_KEYNAME
     unset CROMWELL_PRIVKEY
   fi
 
