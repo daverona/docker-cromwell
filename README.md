@@ -31,7 +31,7 @@ It will show how to use cromwell. Note that `cromwell` in the command is an *ali
 java ${JAVA_OPTS} -jar /app/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}
 ```
 
-Run run cromwell in server mode with default configuration:
+Run cromwell in server mode with default configuration:
 
 ```bash
 docker container run --rm \
