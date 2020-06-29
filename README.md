@@ -44,14 +44,14 @@ docker container run --rm \
 
 Then visit [http://localhost](http://localhost).
 If you submit a workflow, the output will be generated under `$PWD/data` directory on the host.
-Make sure that `$PWD/data` is owned by the user running the above command.
+Make sure that `$PWD/data` is readable/writable by the user running the above command.
 (Otherwise cromwell won't be able to write any output to `$PWD/data` on the host.)
 Note that if the command is *omitted*, cromwell runs in *server* mode by default.
 
-> Note that there is a user `cromwell` in the container who runs the cromwell instance.
+> Note that there is a user `cromwell` in the container which runs the cromwell instance.
 > And note that `cromwell` user in the container is set to the user on the host running the command.
 > Therefore the host directory (i.e. `$PWD/data`), which is bind-mounted to `/data` in the container,
-> must be writable by the user on the host.
+> must be readable/writable by the user on the host.
 > If you have a specific user on the host to run cromwell, 
 > replace `--user` option with the user's uid and gid
 > and make sure whatever directory mounted to `/data` in the container is writable by the user.
