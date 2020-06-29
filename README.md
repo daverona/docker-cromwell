@@ -43,7 +43,7 @@ docker container run --rm \
 
 Then visit [http://localhost](http://localhost).
 If you submit a workflow, the output will be generated under `data` directory on the host.
-Note that the command is *omitted*. If the command is omitted, cromwell runs in *server* mode by default.
+Note that if the command is *omitted*, cromwell runs in *server* mode by default.
 
 ## Advanced Usages
 
