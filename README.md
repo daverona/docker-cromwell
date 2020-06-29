@@ -44,6 +44,7 @@ docker container run --rm \
 
 Then visit [http://localhost](http://localhost).
 If you submit a workflow, the output will be generated under `data` directory on the host.
+Make sure that `$PWD/data` is owned by the user running the above command.
 Note that if the command is *omitted*, cromwell runs in *server* mode by default.
 
 > Note that there is a user `cromwell` in the container who runs the cromwell instance.
