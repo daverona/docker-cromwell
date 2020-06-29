@@ -36,8 +36,9 @@ Run run cromwell in server mode with default configuration:
 ```bash
 docker container run --rm \
   --detach \
+  --user "$(id -u):$(id -g)" \
   --publish 80:8000 \
-  --volume $PWD/data:/var/local \
+  --volume $PWD/data:/data \
   daverona/cromwell
 ```
 
@@ -52,11 +53,11 @@ To run cromwell with a configuration file, say `app.conf`:
 ```bash
 docker container run --rm \
   --detach \
-  --volume $PWD/app.conf:/app/app.conf:ro \
-  --volume $PWD/data:/var/local \
+  --user "$(id -u):$(id -g)" \
   --publish 80:8000 \
   --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
-  --env CROMWELL_ARGS="" \
+  --volume $PWD/app.conf:/app/app.conf:ro \
+  --volume $PWD/data:/data \
   daverona/cromwell
 ```
 
