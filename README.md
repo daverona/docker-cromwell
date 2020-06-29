@@ -96,10 +96,10 @@ submit-docker = """
 """
 ```
 
-> Please replace `host.example` and `tom` with your host and your username on the host 
-> in the above example. No matter what, *never* use `localhost` or any loopback to specify 
-> your host. This `localhost` or loopbacks are not your host but the container itself
-> *in* the container.
+> Replace `host.example` and `tom` with your host and your username on the host 
+> in the above example. *Never* use `localhost` or any loopback to specify 
+> your host. `localhost` and loopbacks in the container are not your host but 
+> the container itself.
 
 Run a container to allow workflows to use Docker images on the host:
 
