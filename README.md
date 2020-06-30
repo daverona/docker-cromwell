@@ -17,7 +17,26 @@ Available versions are:
 
 ## Quick Start
 
-Run the container:
+It's recommeded to build your own Docker image for security reason.
+Build one using your UID and GID:
+
+```bash
+git clone https://gitlab.com/daverona/docker/cromwell.git
+cd cromwell
+docker image build \
+  --build-arg CROMWELL_UID="$(id -u)" \
+  --build-arg CROMWELL_GID="$(id -g) \
+  --tag daverona/cromwell \
+  .
+```
+
+> If an error occurs during building image, your UID/GID are taken in the image 
+> likely by Alpine system account. Try without GID option.
+
+> In the image an account `cromwell` which has UID and GID same as yours is created.
+> Cromwell standalone and server instances will be run by this `cromwell` account.
+
+Run a container:
 
 ```bash
 docker container run --rm \
@@ -28,11 +47,44 @@ docker container run --rm \
 It will show how to use cromwell. Note that `cromwell` on the last line is an *alias* of:
 
 ```bash
-java ${JAVA_OPTS} -jar /app/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}
+java ${JAVA_OPTS} -jar /cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}
 ```
 
 
-## Usages
+Run cromwell in server mode with default configuration:
+
+```bash
+docker container run --rm \
+  --detach \
+  --publish 80:8000 \
+  --volume $PWD/data:/data \
+  daverona/cromwell
+```
+
+Then visit [http://localhost](http://localhost).
+If you submit a workflow, the output will be generated under `$PWD/data` directory on the host.
+Make sure that `$PWD/data` is readable and writable by the user who built the image.
+(Otherwise cromwell won't be able to write any output to `$PWD/data` on the host.)
+Note that if the command is *omitted*, cromwell runs in *server* mode by default.
+
+> Note `cromwell` in the container runs cromwell server and this account reads and writes to `/data` 
+> in the container, to which `$PWD/data` on the host bind-mounts. Therefore the image builder
+> must be able to read and write to `$PWD/data` on the host because `cromwell`
+> in the container has the same UID/GID as the image builder.
+
+To use a custom configuration file, say `app.conf`, run a container:
+
+```bash
+docker container run --rm \
+  --detach \
+  --publish 80:8000 \
+  --env JAVA_OPTS="-Dconfig.file=/cromwell/app.conf" \
+  --volume $PWD/app.conf:/cromwell/app.conf:ro \
+  --volume $PWD/data:/data \
+  daverona/cromwell
+```
+
+## Advanced Usages
 
 ```bash
 docker container exec cromwell cat /home/cromwell/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
@@ -42,48 +94,6 @@ docker container exec cromwell cat /home/cromwell/.ssh/id_rsa.pub >> ~/.ssh/auth
 docker container exec cromwell bash -c "ssh-keyscan -H 192.168.10.139 2>/dev/null > /home/cromwell/.ssh/known_hosts"
 ```
 
-### Local Backend
-
-Run cromwell in server mode with default configuration:
-
-```bash
-docker container run --rm \
-  --detach \
-  --user "$(id -u):$(id -g)" \
-  --publish 80:8000 \
-  --volume $PWD/data:/data \
-  daverona/cromwell
-```
-
-Then visit [http://localhost](http://localhost).
-If you submit a workflow, the output will be generated under `$PWD/data` directory on the host.
-Make sure that `$PWD/data` is readable/writable by the user running the above command.
-(Otherwise cromwell won't be able to write any output to `$PWD/data` on the host.)
-Note that if the command is *omitted*, cromwell runs in *server* mode by default.
-
-> Note that the user running the above command maps to a user `cromwell` in the container,
-> which runs a cromwell instance. This `cromwell` user reads and writes to `/data` in the container, 
-> to which `$PWD/data` on the host bind-mounts. Therefore the user on the host
-> must be able to read and write to `$PWD/data` on the host.
-> If you have a specific user on the host to run cromwell, 
-> replace `--user` option with the user's uid and gid
-> and make sure whatever directory mounted to `/data` in the container is accesible by the user.
-
-
-To use a custom configuration file, say `app.conf`, run a container:
-
-```bash
-docker container run --rm \
-  --detach \
-  --user "$(id -u):$(id -g)" \
-  --publish 80:8000 \
-  --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
-  --volume $PWD/app.conf:/app/app.conf:ro \
-  --volume $PWD/data:/data \
-  daverona/cromwell
-```
-
-## Advanced Usages
 
 ### Image Building
 
