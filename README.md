@@ -66,7 +66,7 @@ Make sure that `$PWD/data` is readable and writable by the user who built the im
 (Otherwise cromwell won't be able to write any output to `$PWD/data` on the host.)
 Note that if the command is *omitted*, cromwell runs in *server* mode by default.
 
-> Note that `cromwell` in the container runs cromwell server and this account reads and writes to `/data` 
+> Note that `cromwell` in the container runs cromwell server and this account accesses to `/data` 
 > in the container, to which `$PWD/data` on the host bind-mounts. Therefore the image builder
 > must be able to read from and write to `$PWD/data` on the host because `cromwell`
 > in the container has the same UID/GID as the image builder.
