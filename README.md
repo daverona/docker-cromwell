@@ -69,7 +69,7 @@ Note that if the command is *omitted*, cromwell runs in *server* mode by default
 > Note that `cromwell` in the container runs cromwell server and this account accesses to `/data` 
 > in the container, to which `$PWD/data` on the host bind-mounts. Therefore the image builder
 > must be able to read from and write to `$PWD/data` on the host because `cromwell`
-> in the container has the same UID/GID as the image builder.
+> in the container has the same UID/GID as the image builder's.
 
 To use a custom configuration file, say `app.conf`, run a container:
 
