@@ -86,6 +86,12 @@ docker container run --rm \
 ## Advanced Usages
 
 In this section we show how to log in remote (or local) host and run workflows. 
+
+### Local Backend with Docker
+
+Since cromwell runs in a Docker container on your host, your host is surely 
+able to run workflows which utilize Docker images.
+
 For `cromwell` account to log in without password, `cromwell`'s RSA public key
 needs to be added to your `authorized_keys` file:
 
@@ -94,11 +100,6 @@ docker container run --rm \
   daverona/cromwell \
     cat /cromwell/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 ```
-
-### Local Backend with Docker
-
-Since cromwell runs in a Docker container on your host, your host is surely 
-able to run workflows which utilize Docker images.
 
 For `cromwell` account to trust your host,
 run this (after replace `host.example` with your host's address):
@@ -156,6 +157,18 @@ For this to work, the following conditions must be satisfied:
 
 * Disk volume is shared among hosts running slurm and the host running cromwell
 * You have an account on the host running `slumrctld` daemon
+
+For `cromwell` account to log in to without password, 
+`cromwell`'s RSA public key needs to be added to your `authorized_keys` file:
+
+```bash
+docker container run --rm \
+  daverona/cromwell \
+    cat /cromwell/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+```
+
+
+the host running slurmctld daemon 
 
 For `cromwell` account to trust the host running slurmctld daemon,
 run this (after replace `slurmctld.example` with the slurm host's address):
