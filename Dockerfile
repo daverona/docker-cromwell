@@ -19,7 +19,7 @@ RUN apk add --no-cache \
   && mkdir -p /data \
   && chown -R cromwell:cromwell /cromwell /data
 
-ARG CROMWELL_VERSION=51
+ARG CROMWELL_VERSION=47
 ENV CROMWELL_VERSION=$CROMWELL_VERSION
 
 # Install cromwell
