@@ -165,7 +165,7 @@ For this to work, the following conditions must be satisfied:
 
 For `cromwell` account to log in without password to the slurm host,
 `cromwell`'s RSA public key needs to be added to your `${HOME}/.ssh/authorized_keys` file on the host.
-To do so, run this (after replace `slurmctld.example` and `tom` with the address of the host running slurmctld daemon and your username on the host):
+To do so, run this (after replace `slurmctld.example` and `tom` with the address of slurm host and your username on the host):
 
 ```bash
 docker container run --rm \
