@@ -31,6 +31,7 @@ docker image build \
 ```
 
 If an error occurs, your UID/GID are taken by Alpine system account. Try without GID.
+Remove the source directory after build an image.
 
 > An account `cromwell` which has the same UID and GID as the image builder's is created in the image.
 > All cromwell instances will be run by `cromwell` account.
@@ -69,7 +70,7 @@ Note that if the command is *omitted*, cromwell runs in *server* mode by default
 > Note that `cromwell` in the container runs cromwell server and this account accesses to `/data` 
 > in the container, to which `$PWD/data` on the host bind-mounts. Therefore the image builder
 > must be able to read from and write to `$PWD/data` on the host because `cromwell`
-> in the container has the same UID/GID as the image builder's.
+> in the container has the same UID and GID as the image builder's.
 
 To use a custom configuration file, say `app.conf`, run a container:
 
@@ -85,12 +86,14 @@ docker container run --rm \
 
 ## Advanced Usages
 
-In this section we show how to log in remote (or local) host and run workflows. 
+In this section we show how to log in to remote (or local) host and run workflows. 
 
 ### Local Backend with Docker
 
 Since cromwell runs in a Docker container on your host, your host is surely 
-able to run workflows which utilize Docker images.
+able to run workflows which utilize Docker images. The catch is, since cromwell runs in a container,
+a workflow cannot create another container in the cromwell container. However `cromwell` can log in 
+to your host to run the workflow container.
 
 For `cromwell` account to log in without password to your host, 
 `cromwell`'s RSA public key needs to be added to your `${HOME}/.ssh/authorized_keys` file on the host:
