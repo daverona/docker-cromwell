@@ -101,7 +101,8 @@ For `cromwell` account to log in without password to your host,
 ```bash
 docker container run --rm \
   daverona/cromwell \
-    cat /cromwell/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+    cat /cromwell/.ssh/id_rsa.pub \
+>> ~/.ssh/authorized_keys
 ```
 
 To make `cromwell` trust your host,
@@ -110,7 +111,8 @@ run this (after replace `host.example` with your host's address):
 ```bash
 docker container run --rm \
   daverona/cromwell \
-    ssh-keyscan -H host.example 2>/dev/null > known_hosts
+    ssh-keyscan -H host.example \
+>> known_hosts 2>/dev/null 
 ```
 
 Make sure your `app.conf` contains the following in `Local` section:
@@ -162,16 +164,16 @@ For this to work, the following conditions must be satisfied:
 * You have an account on the host running slumrctld daemon
 
 For `cromwell` account to log in without password to the slurm host,
-`cromwell`'s RSA public key needs to be added to your `${HOME}/.ssh/authorized_keys` file on the host:
+`cromwell`'s RSA public key needs to be added to your `${HOME}/.ssh/authorized_keys` file on the host.
+To do so, run this (after replace `slurmctld.example` and `tom` with the address of the host running slurmctld daemon and your username on the host):
 
 ```bash
 docker container run --rm \
   daverona/cromwell \
-    cat /cromwell/.ssh/id_rsa.pub > authorized_keys
+    cat /cromwell/.ssh/id_rsa.pub \
+| ssh tom@slurmctld.example 'cat >> .ssh/authorized_keys'
+# enter password if asked
 ```
-
-Copy the contents of `authorized keys` to your `${HOME}/.ssh/authorized_keys` on the host running slurmctld daemon
-and remove `authorized_keys` in the current directory.
 
 To make `cromwell` trust the host running slurmctld daemon,
 run this (after replace `slurmctld.example` with the address of slurm host):
@@ -179,7 +181,8 @@ run this (after replace `slurmctld.example` with the address of slurm host):
 ```bash
 docker container run --rm \
   daverona/cromwell \
-    ssh-keyscan -H slurmctld.example 2>/dev/null > known_hosts
+    ssh-keyscan -H slurmctld.example \
+>> known_hosts 2>/dev/null 
 ```
 
 Make sure `app.conf` contains `submit` key and optional `submit-docker` key 
