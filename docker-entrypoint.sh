@@ -8,8 +8,8 @@ if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
   # Start cromwell (in server mode by default)
   if [ $# -eq 0 ]; then
     [ -z "$*" ] && [ -z "${CROMWELL_ARGS}" ] && CROMWELL_ARGS=server
-    echo -e "${cyan}Running \"java ${JAVA_OPTS} -jar /app/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS} $@\"...${reset}"
-    exec java ${JAVA_OPTS} -jar /app/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS} "$@"
+    echo -e "${cyan}Running \"java ${JAVA_OPTS} -jar /cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS} $@\"...${reset}"
+    exec java ${JAVA_OPTS} -jar /cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS} "$@"
   fi
 fi
 

@@ -34,6 +34,14 @@ java ${JAVA_OPTS} -jar /app/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}
 
 ## Usages
 
+```bash
+docker container exec cromwell cat /home/cromwell/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+```
+
+```bash
+docker container exec cromwell bash -c "ssh-keyscan -H 192.168.10.139 2>/dev/null > /home/cromwell/.ssh/known_hosts"
+```
+
 ### Local Backend
 
 Run cromwell in server mode with default configuration:
@@ -82,7 +90,6 @@ docker container run --rm \
 ```bash
 docker image build \
   --build-arg CROMWELL_UID="$(id -u)" \
-  --build-arg CROMWELL_GID="$(id -g)" \
   --tag daverona/cromwell \
   .
 ```

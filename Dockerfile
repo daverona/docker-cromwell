@@ -11,24 +11,24 @@ RUN apk add --no-cache \
     tzdata \
   # Create "cromwell" user
   && addgroup -g ${CROMWELL_GID} cromwell \
-  && adduser -D -s /bin/bash -h /home/cromwell -u ${CROMWELL_UID} -G cromwell -g "cromwell" cromwell \
-  && cp /etc/profile /home/cromwell/.profile \
+  && adduser -D -s /bin/bash -h /cromwell -u ${CROMWELL_UID} -G cromwell -g "cromwell" cromwell \
+  && cp /etc/profile /cromwell/.profile \
   # Create keys and data directories
-  && mkdir -p /home/cromwell/.ssh && chmod 700 /home/cromwell/.ssh \
-  && ssh-keygen -t rsa -f /home/cromwell/.ssh/id_rsa -q -N "" -b 4096 \
-  #&& ssh-keygen -t dsa -f /home/cromwell/.ssh/id_dsa -q -N "" \
-  #&& ssh-keygen -t ecdsa -f /home/cromwell/.ssh/id_ecdsa -q -N "" -b 521 \
-  #&& ssh-keygen -t ed25519 -f /home/cromwell/.ssh/id_ed25519 -q -N "" \
+  && mkdir -p /cromwell/.ssh && chmod 700 /cromwell/.ssh \
+  && ssh-keygen -t rsa -f /cromwell/.ssh/id_rsa -q -N "" -b 4096 \
+  #&& ssh-keygen -t dsa -f /cromwell/.ssh/id_dsa -q -N "" \
+  #&& ssh-keygen -t ecdsa -f /cromwell/.ssh/id_ecdsa -q -N "" -b 521 \
+  #&& ssh-keygen -t ed25519 -f /cromwell/.ssh/id_ed25519 -q -N "" \
   && mkdir -p /data \
-  && chown -R cromwell:cromwell /home/cromwell /data
+  && chown -R cromwell:cromwell /cromwell /data
 
 ARG CROMWELL_VERSION=51
 ENV CROMWELL_VERSION=$CROMWELL_VERSION
 
 # Install cromwell
-RUN mkdir -p /app && cd /app \
-  && wget --quiet https://github.com/broadinstitute/cromwell/releases/download/$CROMWELL_VERSION/cromwell-$CROMWELL_VERSION.jar \
-  && ln -sf cromwell-$CROMWELL_VERSION.jar cromwell.jar
+RUN wget -q -O=/cromwell/cromwell-$CROMWELL_VERSION https://github.com/broadinstitute/cromwell/releases/download/$CROMWELL_VERSION/cromwell-$CROMWELL_VERSION.jar \
+  && ln -sf cromwell-$CROMWELL_VERSION.jar cromwell.jar \
+  && chown cromwell:cromwell /cromwell/cromwell*.jar
 
 # Configure miscellanea
 COPY docker-entrypoint.sh /
