@@ -159,9 +159,9 @@ Make sure that `$PWD/data` is readable/writable by the image builder.
 For this to work, the following conditions must be satisfied:
 
 * Disk volume is shared among hosts running slurm and the host running cromwell
-* You have an account on the host running `slumrctld` daemon
+* You have an account on the host running slumrctld daemon
 
-For `cromwell` account to log in to without password to the slurm host,
+For `cromwell` account to log in without password to the slurm host,
 `cromwell`'s RSA public key needs to be added to your `${HOME}/.ssh/authorized_keys` file on the host:
 
 ```bash
@@ -174,7 +174,7 @@ Copy the contents of `authorized keys` to your `${HOME}/.ssh/authorized_keys` on
 and remove `authorized_keys` in the current directory.
 
 To make `cromwell` trust the host running slurmctld daemon,
-run this (after replace `slurmctld.example` with the slurm host's address):
+run this (after replace `slurmctld.example` with the address of slurm host):
 
 ```bash
 docker container run --rm \
@@ -182,7 +182,7 @@ docker container run --rm \
     ssh-keyscan -H slurmctld.example 2>/dev/null > known_hosts
 ```
 
-Make sure `app.conf` contains `slurm` key and optional `submit-docker` key 
+Make sure `app.conf` contains `submit` key and optional `submit-docker` key 
 under `Slurm` backend section, like this:
 
 ```hocon
