@@ -32,7 +32,7 @@ docker image build \
 
 If an error occurs, your UID/GID are taken by Alpine system account. Try without GID.
 
-> An account `cromwell` which has UID and GID same as the image builder's is created in the image.
+> An account `cromwell` which has the same UID and GID as the image builder's is created in the image.
 > All cromwell instances will be run by `cromwell` account.
 
 Run a container:
