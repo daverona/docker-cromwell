@@ -93,7 +93,7 @@ Since cromwell runs in a Docker container on your host, your host is surely
 able to run workflows which utilize Docker images.
 
 For `cromwell` account to log in without password to your host, 
-`cromwell`'s RSA public key needs to be added to your `authorized_keys` file:
+`cromwell`'s RSA public key needs to be added to your `${HOME}/.ssh/authorized_keys` file on the host:
 
 ```bash
 docker container run --rm \
@@ -159,7 +159,7 @@ For this to work, the following conditions must be satisfied:
 * You have an account on the host running `slumrctld` daemon
 
 For `cromwell` account to log in to without password to the slurm host,
-`cromwell`'s RSA public key needs to be added to your `authorized_keys` file on the host:
+`cromwell`'s RSA public key needs to be added to your `${HOME}/.ssh/authorized_keys` file on the host:
 
 ```bash
 docker container run --rm \
@@ -170,7 +170,7 @@ docker container run --rm \
 Copy the contents of `authorized keys` to your `${HOME}/.ssh/authorized_keys` on the host running slurmctld daemon
 and remove `authorized_keys` in the current directory.
 
-For `cromwell` account to trust the host running slurmctld daemon,
+To make `cromwell` trust the host running slurmctld daemon,
 run this (after replace `slurmctld.example` with the slurm host's address):
 
 ```bash
@@ -178,10 +178,6 @@ docker container run --rm \
   daverona/cromwell \
     ssh-keyscan -H slurmctld.example 2>/dev/null > known_hosts
 ```
-
-Note that bind-mount for data is changed to `/var/local`. This is because
-slurm needs to access what cromwell generates and vice versa. 
-`slurm.example` is the host running `slurmctld`.
 
 Make sure `app.conf` contains `slurm` key and optional `submit-docker` key 
 under `Slurm` backend section, like this:
@@ -226,7 +222,7 @@ submit-docker = """
 """
 ```
 
-> Replace `slurmctld.example` and `tom` with the address of the host running slurmctld daemon name 
+> Replace `slurmctld.example` and `tom` with the address of the host running slurmctld daemon
 > and your username on this host.
 
 To run a workflow using slurm:
