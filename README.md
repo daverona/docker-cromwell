@@ -92,8 +92,8 @@ In this section we show how to log in remote (or local) host and run workflows.
 Since cromwell runs in a Docker container on your host, your host is surely 
 able to run workflows which utilize Docker images.
 
-For `cromwell` account to log in without password, `cromwell`'s RSA public key
-needs to be added to your `authorized_keys` file:
+For `cromwell` account to log in without password to your host, 
+`cromwell`'s RSA public key needs to be added to your `authorized_keys` file:
 
 ```bash
 docker container run --rm \
@@ -101,7 +101,7 @@ docker container run --rm \
     cat /cromwell/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 ```
 
-For `cromwell` account to trust your host,
+To make `cromwell` trust your host,
 run this (after replace `host.example` with your host's address):
 
 ```bash
@@ -149,7 +149,7 @@ Make sure that `$PWD/data` is readable/writable by the image builder.
 > Note that the data directory in cromwell container (i.e. `$PWD/data` on the right hand side), 
 > which cromwell reads from and writes to, is the same as the data directory on the host (`$PWD/data` on the left hand side). 
 > This restriction is to share the same directory among cromwell container and workflow's containers.
-> A workflow's containers point this directory with `${cwd}` in `app.conf` file.
+> A workflow's containers point to this directory with `${cwd}` in `app.conf` file.
 
 ### Slurm Backend
 
@@ -158,17 +158,17 @@ For this to work, the following conditions must be satisfied:
 * Disk volume is shared among hosts running slurm and the host running cromwell
 * You have an account on the host running `slumrctld` daemon
 
-For `cromwell` account to log in to without password, 
-`cromwell`'s RSA public key needs to be added to your `authorized_keys` file:
+For `cromwell` account to log in to without password to the slurm host,
+`cromwell`'s RSA public key needs to be added to your `authorized_keys` file on the host:
 
 ```bash
 docker container run --rm \
   daverona/cromwell \
-    cat /cromwell/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+    cat /cromwell/.ssh/id_rsa.pub > authorized_keys
 ```
 
-
-the host running slurmctld daemon 
+Copy the contents of `authorized keys` to your `${HOME}/.ssh/authorized_keys` on the host running slurmctld daemon
+and remove `authorized_keys` in the current directory.
 
 For `cromwell` account to trust the host running slurmctld daemon,
 run this (after replace `slurmctld.example` with the slurm host's address):
@@ -246,7 +246,7 @@ docker container run --rm \
 > Note that the data directory in cromwell container (i.e. `$PWD/data` on the right hand side), 
 > which cromwell reads from and writes to, is the same as the data directory on the host (`$PWD/data` on the left hand side). 
 > This restriction is to share the same directory among cromwell container, workflow's containers, and slurm workers.
-> A workflow's containers point this directory with `${cwd}` in `app.conf` file.
+> A workflow's containers point to this directory with `${cwd}` in `app.conf` file.
 
 ## References
 
