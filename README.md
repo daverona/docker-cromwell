@@ -25,16 +25,16 @@ git clone https://gitlab.com/daverona/docker/cromwell.git
 cd cromwell
 docker image build \
   --build-arg CROMWELL_UID="$(id -u)" \
-  --build-arg CROMWELL_GID="$(id -g) \
+  --build-arg CROMWELL_GID="$(id -g)" \
   --tag daverona/cromwell \
   .
 ```
 
 > If an error occurs during building image, your UID/GID are taken
-> likely by Alpine system account. Try without GID option.
+> by Alpine system account. Try without GID option.
 
-> An account `cromwell` which has UID and GID same as yours is created in the image.
-> Cromwell standalone and server instances will be run by `cromwell` account.
+> An account `cromwell` which has UID and GID same as the image builder's is created in the image.
+> All cromwell instances will be run by `cromwell` account.
 
 Run a container:
 
@@ -63,13 +63,13 @@ docker container run --rm \
 
 Then visit [http://localhost](http://localhost).
 If you submit a workflow, the output will be generated under `$PWD/data` directory on the host.
-Make sure that `$PWD/data` is readable and writable by the user who built the image.
+Make sure that `$PWD/data` is readable and writable by the user who built the image on the host.
 (Otherwise cromwell won't be able to write any output to `$PWD/data` on the host.)
 Note that if the command is *omitted*, cromwell runs in *server* mode by default.
 
-> Note `cromwell` in the container runs cromwell server and this account reads and writes to `/data` 
+> Note that `cromwell` in the container runs cromwell server and this account reads and writes to `/data` 
 > in the container, to which `$PWD/data` on the host bind-mounts. Therefore the image builder
-> must be able to read and write to `$PWD/data` on the host because `cromwell`
+> must be able to read from and write to `$PWD/data` on the host because `cromwell`
 > in the container has the same UID/GID as the image builder.
 
 To use a custom configuration file, say `app.conf`, run a container:
@@ -86,28 +86,29 @@ docker container run --rm \
 
 ## Advanced Usages
 
-```bash
-docker container exec cromwell cat /home/cromwell/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-```
+In this section we show how to log in remote (or local) host and run workflows. 
+For `cromwell` account to log in without password, `cromwell`'s RSA public key
+needs to be added to your `authorized_keys` file:
 
 ```bash
-docker container exec cromwell bash -c "ssh-keyscan -H 192.168.10.139 2>/dev/null > /home/cromwell/.ssh/known_hosts"
-```
-
-
-### Image Building
-
-```bash
-docker image build \
-  --build-arg CROMWELL_UID="$(id -u)" \
-  --tag daverona/cromwell \
-  .
+docker container run --rm \
+  daverona/cromwell \
+    cat /cromwell/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 ```
 
 ### Local Backend with Docker
 
-Since cromwell runs in a Docker container on your host, your host
-is surely able to run workflows which utilize Docker images.
+Since cromwell runs in a Docker container on your host, your host is surely 
+able to run workflows which utilize Docker images.
+
+For `cromwell` account to trust your host,
+run this (after replace `host.example` with your host's address):
+
+```bash
+docker container run --rm \
+  daverona/cromwell \
+    ssh-keyscan -H host.example 2>/dev/null > known_hosts
+```
 
 Make sure your `app.conf` contains the following in `Local` section:
 
@@ -115,10 +116,7 @@ Make sure your `app.conf` contains the following in `Local` section:
 submit = "/usr/bin/env bash ${script}"
 
 submit-docker = """
-  ssh-keyscan -H host.example 2>/dev/null >> /home/cromwell/.ssh/known_hosts \
-  && sort /home/cromwell/.ssh/known_hosts | uniq > /tmp/known_hosts.unique \
-  && mv /tmp/known_hosts.unique /home/cromwell/.ssh/known_hosts \
-  && ssh tom@host.example '/bin/bash --login -c " \
+  ssh tom@host.example '/bin/bash --login -c " \
     docker container run \
       --rm \
       --interactive \
@@ -129,66 +127,56 @@ submit-docker = """
 """
 ```
 
-> Replace `host.example` and `tom` with your host name and your username on the host 
-> in the above example. *Never* use `localhost` or any loopback to specify 
-> your host. `localhost` and loopbacks in the container are *not* your host *but* 
-> the container itself.
+> Replace `host.example` and `tom` with your host name and your username on the host.
+> *Never* use `localhost` or any loopback to specify your host.
 
 Run a cromwell container to allow workflows to use Docker images on the host:
 
 ```bash
 docker container run --rm \
   --detach \
-  --user "$(id -u):$(id -g)" \
   --publish 80:8000 \
-  --env CROMWELL_KEYNAME="id_rsa" \
-  --env CROMWELL_PRIVKEY="$(cat ${HOME}/.ssh/id_rsa)" \
-  --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
-  --volume $PWD/app.conf:/app/app.conf:ro \
+  --env JAVA_OPTS="-Dconfig.file=/cromwell/app.conf" \
+  --volume $PWD/known_hosts:/cromwell/.ssh/known_hosts:ro \
+  --volume $PWD/app.conf:/cromwell/app.conf:ro \
   --volume $PWD/data:$PWD/data \
   --workdir $PWD/data \
   daverona/cromwell
 ```
 
-Make sure that `$PWD/data` is readable/writable by the user running the above command.
+Make sure that `$PWD/data` is readable/writable by the image builder.
 
 > Note that the data directory in cromwell container (i.e. `$PWD/data` on the right hand side), 
-> which cromwell reads and writes to, is the same as the data directory on the host (`$PWD/data` on the left hand side). 
-> This restriction is to share a same readable/writable directory between cromwell container and workflow's containers.
-> A workflow's containers point this directory by using `${cwd}` in `app.conf` file.
+> which cromwell reads from and writes to, is the same as the data directory on the host (`$PWD/data` on the left hand side). 
+> This restriction is to share the same directory among cromwell container and workflow's containers.
+> A workflow's containers point this directory with `${cwd}` in `app.conf` file.
 
 ### Slurm Backend
 
-For this To work, we assume the following conditions are satisfied:
+For this to work, the following conditions must be satisfied:
 
-* Disk volume is shared between slurm and the one running your cromwell
-* You have an account on the host where `slumrctld` is running
+* Disk volume is shared among hosts running slurm and the host running cromwell
+* You have an account on the host running `slumrctld` daemon
 
-To run a workflow using slurm:
+For `cromwell` account to trust the host running slurmctld daemon,
+run this (after replace `slurmctld.example` with the slurm host's address):
 
 ```bash
 docker container run --rm \
-  --detach \
-  --volume $PWD/app.conf:/app/app.conf:ro \
-  --volume $PWD/ssh:/root/.ssh \
-  --volume /var/local:/var/local \
-  --publish 80:8000 \
-  --env JAVA_OPTS="-Dconfig.file=/app/app.conf" \
-  --env CROMWELL_ARGS="" \
-  --env EXTERNAL_HOSTS="slurm.example" \
-  daverona/cromwell
+  daverona/cromwell \
+    ssh-keyscan -H slurmctld.example 2>/dev/null > known_hosts
 ```
 
 Note that bind-mount for data is changed to `/var/local`. This is because
 slurm needs to access what cromwell generates and vice versa. 
 `slurm.example` is the host running `slurmctld`.
 
-`app.conf` must contain `slurm` key and optional `submit-docker` key under `Slurm` backend section,
-like this:
+Make sure `app.conf` contains `slurm` key and optional `submit-docker` key 
+under `Slurm` backend section, like this:
 
 ```hocon
 submit = """
-  ssh mine@slurm.example '/bin/bash --login -c " \
+  ssh tom@slurmctld.example '/bin/bash --login -c " \
     sbatch \
       --partition=... \
       --job-name=${job_name} \
@@ -204,7 +192,7 @@ submit = """
 """
 
 submit-docker = """
-  ssh mine@slurm.example '/bin/bash --login -c " \
+  ssh tom@slurmctld.example '/bin/bash --login -c " \
     sbatch \
       --partition=... \
       --job-name=${job_name} \
@@ -226,13 +214,27 @@ submit-docker = """
 """
 ```
 
-`mine` is your account on `slurm.example`. Don't forget to 
-append the RSA SSH public key contents to `mine`'s `authorized_keys` on `slurm.example`.
-I.e. append the contents of `ssh/id_rsa.pub` to `~/mine/.ssh/authorized_keys` on `slurm.example`.
+> Replace `slurmctld.example` and `tom` with the address of the host running slurmctld daemon name 
+> and your username on this host.
 
-## Building
+To run a workflow using slurm:
 
+```bash
+docker container run --rm \
+  --detach \
+  --publish 80:8000 \
+  --env JAVA_OPTS="-Dconfig.file=/cromwell/app.conf" \
+  --volume $PWD/known_hosts:/cromwell/.ssh/known_hosts:ro \
+  --volume $PWD/app.conf:/cromwell/app.conf:ro \
+  --volume $PWD/data:$PWD/data \
+  --workdir $PWD/data \
+  daverona/cromwell
+```
 
+> Note that the data directory in cromwell container (i.e. `$PWD/data` on the right hand side), 
+> which cromwell reads from and writes to, is the same as the data directory on the host (`$PWD/data` on the left hand side). 
+> This restriction is to share the same directory among cromwell container, workflow's containers, and slurm workers.
+> A workflow's containers point this directory with `${cwd}` in `app.conf` file.
 
 ## References
 
