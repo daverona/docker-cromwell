@@ -6,14 +6,7 @@ This is a repository for Docker images of [Cromwell](https://github.com/broadins
 
 * GitLab repository: [https://gitlab.com/daverona/docker/cromwell](https://gitlab.com/daverona/docker/cromwell)
 * Docker Hub repository: [https://hub.docker.com/r/daverona/cromwell](https://hub.docker.com/r/daverona/cromwell)
-
-Available versions are:
-
-* [51](https://gitlab.com/daverona/docker/cromwell/-/blob/51/Dockerfile), [latest](https://gitlab.com/daverona/docker/cromwell/-/blob/51/Dockerfile)
-* [50](https://gitlab.com/daverona/docker/cromwell/-/blob/50/Dockerfile)
-* [49](https://gitlab.com/daverona/docker/cromwell/-/blob/49/Dockerfile)
-* [48](https://gitlab.com/daverona/docker/cromwell/-/blob/48/Dockerfile)
-* [47](https://gitlab.com/daverona/docker/cromwell/-/blob/47/Dockerfile)
+* Available releases: [https://gitlab.com/daverona/docker/cromwell/\-/releases](https://gitlab.com/daverona/docker/cromwell/-/releases)
 
 ## Quick Start
 
