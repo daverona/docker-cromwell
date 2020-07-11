@@ -6,7 +6,7 @@ This is a repository for Docker images of [Cromwell](https://github.com/broadins
 
 * GitLab repository: [https://gitlab.com/daverona/docker/cromwell](https://gitlab.com/daverona/docker/cromwell)
 * Docker registry: [https://hub.docker.com/r/daverona/cromwell](https://hub.docker.com/r/daverona/cromwell)
-* Available releases: [https://gitlab.com/daverona/docker/cromwell/\-/releases](https://gitlab.com/daverona/docker/cromwell/-/releases)
+* Available releases: [https://gitlab.com/daverona/docker/cromwell/-/releases](https://gitlab.com/daverona/docker/cromwell/-/releases)
 
 ## Quick Start
 
