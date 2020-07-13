@@ -75,12 +75,12 @@ publish:
     - > 
       docker container run 
       --rm
-      --volume $PWD/README.md:/var/local/README.md
+      --volume $PWD/README.md:/app/README.md
       --env DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME
       --env DOCKERHUB_PASSWORD=$DOCKERHUB_PASSWORD
       --env DOCKERHUB_NAMESPACE=$DOCKERHUB_NAMESPACE
       --env DOCKERHUB_IMAGE=$DOCKERHUB_IMAGE
-      daverona/docker-repo-desc
+      daverona/docker-desc
 
 silly:
   stage: silly
