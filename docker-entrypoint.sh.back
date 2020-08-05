@@ -48,7 +48,7 @@ echo -e "${color_cyan}cromwell account: user=${CROMWELL_USER}(${CROMWELL_UID}), 
 
 if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
   #
-  # Ensure /cromwell and the current directory belongs to cromwell
+  # Ensure /cromwell, /data, and the current directory belongs to cromwell
   #
   chown -R ${CROWMELL_USER}:${CROMWELL_GROUP} /cromwell
   chown ${CROWMELL_USER}:${CROMWELL_GROUP} /data ${PWD}
