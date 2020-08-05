@@ -3,53 +3,53 @@ set -e
 
 color_cyan='\033[1;36m'
 color_reset='\033[0m'
+
+CROMWELL_UID=${CROMWELL_UID:-0}
+CROMWELL_GID=${CROMWELL_GID:-0}
 CROMWELL_USER=root
 CROMWELL_GROUP=root
 
-#
-# Decide which user is cromwell and make one if it does not exist
-#
+#############################################################################
+# Decide which user plays cromwell and make one if this user does not exist #
+#############################################################################
 
-if [ ! -z "${CROMWELL_UGID}" ]; then
-  case ${CROMWELL_UGID} in
-    (*:*) CROMWELL_UID=${CROMWELL_UGID%:*} CROMWELL_GID=${CROMWELL_UGID##*:};;
-    (*) CROMWELL_UID=${CROMWELL_UGID} CROMWELL_GID=${CROMWELL_UID};;
-  esac
-  
-  CROMWELL_USER=cromwell
+#
+# Set CROMWELL_GROUP possibly after creating group with gid
+#
+set +e
+getent group ${CROMWELL_GID} > /dev/null 2>&1
+if [ "$?" != 0 ]; then
   CROMWELL_GROUP=cromwell
-
-  set +e
-  # Create a group with gid if it does not exist already
-  getent group ${CROMWELL_GID} > /dev/null 2>&1
-  if [ "$?" != 0 ]; then
-    addgroup -g ${CROMWELL_GID} ${CROMWELL_GROUP}
-  else
-    CROMWELL_GROUP="$(getent group ${CROMWELL_GID} | cut -d: -f1)"
-  fi
-
-  # Create a user with uid if it does not exist already
-  getent passwd ${CROMWELL_UID} > /dev/null 2>&1
-  if [ "$?" != 0 ]; then
-    adduser -D -s /bin/ash -h /cromwell -u ${CROMWELL_UID} -G ${CROMWELL_GROUP} -g "cromwell" ${CROMWELL_USER}
-  else 
-    CROMWELL_USER="$(getent passwd ${CROMWELL_UID} | cut -d: -f1)"
-    addgroup ${CROMWELL_USER} ${CROMWELL_GROUP}
-  fi
-  set -e
+  addgroup -g ${CROMWELL_GID} ${CROMWELL_GROUP}
+else
+  CROMWELL_GROUP="$(getent group ${CROMWELL_GID} | cut -d: -f1)"
 fi
+set -e
+
+#
+# Set CROMWELL_USER possibly after creating user with uid
+#
+set +e
+getent passwd ${CROMWELL_UID} > /dev/null 2>&1
+if [ "$?" != 0 ]; then
+  CROMWELL_USER=cromwell
+  adduser -D -s /bin/bash -h /cromwell -u ${CROMWELL_UID} -G ${CROMWELL_GROUP} -g "cromwell" ${CROMWELL_USER}
+else
+  CROMWELL_USER="$(getent passwd ${CROMWELL_UID} | cut -d: -f1)"
+  addgroup ${CROMWELL_USER} ${CROMWELL_GROUP} > /dev/null 2>&1
+fi
+set -e
 
 echo -e "${color_cyan}cromwell account: user=${CROMWELL_USER}(${CROMWELL_UID}), group=${CROMWELL_GROUP}(${CROMWELL_GID})${color_reset}"
 
-#
-# Run cromwell.jar using possible environment variables if no command is given
-#
+################################################################################
+# Run cromwell.jar using possible environment variables if no command is given #
+################################################################################
 
 if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
   #
   # Ensure /cromwell and the current directory belongs to cromwell
   #
-
   chown -R ${CROWMELL_USER}:${CROMWELL_GROUP} /cromwell
   chown ${CROWMELL_USER}:${CROMWELL_GROUP} /data ${PWD}
   echo -e "${color_cyan}Make sure that ${CROMWELL_UID} has the ownership of cromwell-executions and cromwell-workflow-logs directories${color_reset}"
@@ -57,7 +57,6 @@ if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
   #
   # Start cromwell (in server mdoe by default)
   #
-
   if [ $# -eq 0 ]; then
     [ -z "$*" ] && [ -z "${CROMWELL_ARGS}" ] && CROMWELL_ARGS=server
     echo -e "${color_cyan}Running \"java ${JAVA_OPTS} -jar /cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS} $@\"...${color_reset}"
@@ -65,8 +64,8 @@ if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
   fi
 fi
 
-#
-# Run whatever is given if command is specified
-#
+########################################
+# Run whatever if command is specified #
+########################################
 
 exec gosu ${CROMWELL_USER} "$@"
