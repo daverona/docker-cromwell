@@ -45,7 +45,6 @@ set -e
 #
 
 if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
-
   #
   # Ensure /cromwell and the current directory belongs to cromwell
   #
