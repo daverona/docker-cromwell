@@ -51,7 +51,7 @@ if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
 
   chown -R ${CROWMELL_USER}:${CROMWELL_GROUP} /cromwell
   chown ${CROWMELL_USER}:${CROMWELL_GROUP} /data ${PWD}
-  echo "Make sure that ${CROMWELL_UID} has the ownership of cromwell-executions directory"
+  echo "Make sure that ${CROMWELL_UID} has the ownership of cromwell-executions and cromwell-workflow-logs directories"
 
   #
   # Start cromwell (in server mdoe by default)
