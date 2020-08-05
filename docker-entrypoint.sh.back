@@ -1,71 +1,48 @@
 #!/bin/bash
-set -e
 
 color_cyan='\033[1;36m'
+color_red='\033[1;31m'
 color_reset='\033[0m'
+cromwell_exec=
 
-CROMWELL_UID=${CROMWELL_UID:-0}
-CROMWELL_GID=${CROMWELL_GID:-0}
-CROMWELL_USER=root
-CROMWELL_GROUP=root
 
-#############################################################################
-# Decide which user plays cromwell and make one if this user does not exist #
-#############################################################################
+# Create cromwell account if CROMWELL_UID is specified
 
-#
-# Set CROMWELL_GROUP possibly after creating group with gid
-#
-set +e
-getent group ${CROMWELL_GID} > /dev/null 2>&1
-if [ "$?" != 0 ]; then
-  CROMWELL_GROUP=cromwell
-  addgroup -g ${CROMWELL_GID} ${CROMWELL_GROUP}
-else
-  CROMWELL_GROUP="$(getent group ${CROMWELL_GID} | cut -d: -f1)"
-fi
-set -e
+[ -z "${CROMWELL_GID}" ] && [ ! -z "${CROMWELL_UID}" ] && CROMWELL_GID=${CROMWELL_UID}
+if [ ! -z "${CROMWELL_GID}" ] && [ ! -z "${CROMWELL_UID}" ]; then
+  cromwell_exec=gosu cromwell
 
-#
-# Set CROMWELL_USER possibly after creating user with uid
-#
-set +e
-getent passwd ${CROMWELL_UID} > /dev/null 2>&1
-if [ "$?" != 0 ]; then
-  CROMWELL_USER=cromwell
-  adduser -D -s /bin/bash -h /cromwell -u ${CROMWELL_UID} -G ${CROMWELL_GROUP} -g "cromwell" ${CROMWELL_USER}
-else
-  CROMWELL_USER="$(getent passwd ${CROMWELL_UID} | cut -d: -f1)"
-  addgroup ${CROMWELL_USER} ${CROMWELL_GROUP} > /dev/null 2>&1
-fi
-set -e
-
-echo -e "${color_cyan}cromwell account: user=${CROMWELL_USER}(${CROMWELL_UID}), group=${CROMWELL_GROUP}(${CROMWELL_GID})${color_reset}"
-
-################################################################################
-# Run cromwell.jar using possible environment variables if no command is given #
-################################################################################
-
-if [ $# -eq 0 ] || [ "java" == "$(basename $1)" ]; then
-  #
-  # Ensure /cromwell, /data, and the current directory belongs to cromwell
-  #
-  chown -R ${CROWMELL_USER}:${CROMWELL_GROUP} /cromwell
-  chown ${CROWMELL_USER}:${CROMWELL_GROUP} /data ${PWD}
-  echo -e "${color_cyan}Make sure that ${CROMWELL_UID} has the ownership of cromwell-executions and cromwell-workflow-logs directories${color_reset}"
-
-  #
-  # Start cromwell (in server mdoe by default)
-  #
-  if [ $# -eq 0 ]; then
-    [ -z "$*" ] && [ -z "${CROMWELL_ARGS}" ] && CROMWELL_ARGS=server
-    echo -e "${color_cyan}Running \"java ${JAVA_OPTS} -jar /cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS} $@\"...${color_reset}"
-    exec gosu ${CROMWELL_USER} java ${JAVA_OPTS} -jar /cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS} "$@"
+  #getent group ${CROMWELL_GID} > /dev/null 2>&1
+  #if [ "$?" == 0 ]; then
+  if [ "$(getent group ${CROMWELL_GID})" != "" ]: then
+    echo -e "${color_red}GID ${CROMWELL_UID} is taken already.${color_reset}"
+    exit 1
   fi
+  addgroup -g ${CROMWELL_GID} cromwell
+
+  #getent passwd ${CROMWELL_UID} > /dev/null 2>&1
+  #if [ "$?" == 0 ]; then
+  if [ "$(getent passwd ${CROMWELL_UID})" != "" ]; then
+    echo -e "${color_red}UID ${CROMWELL_UID} is taken already.${color_reset}"
+    exit 1
+  fi
+  adduser -D -s /bin/bash -h /home/cromwell -u ${CROMWELL_UID} -G cromwell -g "cromwell" cromwell
+
+  echo -e "${color_cyan}cromwell: uid=${CROMWELL_UID}, gid=${CROMWELL_GID}${color_reset}"
+
+  chown -R cromwell:cromwell /home/cromwell
+  chown cromwell:cromwell /data ${PWD}
+  echo -e "${color_cyan}Make sure that ${CROMWELL_UID}:${CROMWELL_GID} owns cromwell_root and directories on the host.${color_reset}"
 fi
 
-########################################
-# Run whatever if command is specified #
-########################################
+# Run cromwell.jar if command is not specified
 
-exec gosu ${CROMWELL_USER} "$@"
+if [ $# -eq 0 ]; then
+  [ -z "$*" ] && [ -z "${CROMWELL_ARGS}" ] && CROMWELL_ARGS=server
+  echo -e "${color_cyan}Executing \"java ${JAVA_OPTS} -jar /home/cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS} $@\"...${color_reset}"
+  exec ${cromwell_exec} java ${JAVA_OPTS} -jar "/home/cromwell/cromwell-${CROMWELL_VERSION}.jar" ${CROMWELL_ARGS} "$@"
+fi
+
+# Run whatever if command is specified
+
+exec ${cromwell_exec} "$@"
