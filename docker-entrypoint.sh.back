@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 color_cyan='\033[1;36m'
 color_reset='\033[0m'
@@ -18,6 +19,7 @@ if [ ! -z "${CROMWELL_UGID}" ]; then
   CROMWELL_USER=cromwell
   CROMWELL_GROUP=cromwell
 
+  set +e
   # Create a group with gid if it does not exist already
   getent group ${CROMWELL_GID} > /dev/null 2>&1
   if [ "$?" != 0 ]; then
@@ -34,11 +36,10 @@ if [ ! -z "${CROMWELL_UGID}" ]; then
     CROMWELL_USER="$(getent passwd ${CROMWELL_UID} | cut -d: -f1)"
     addgroup ${CROMWELL_USER} ${CROMWELL_GROUP}
   fi
+  set -e
 fi
 
 echo -e "${color_cyan}cromwell account: user=${CROMWELL_USER}(${CROMWELL_UID}), group=${CROMWELL_GROUP}(${CROMWELL_GID})${color_reset}"
-
-set -e
 
 #
 # Run cromwell.jar using possible environment variables if no command is given
