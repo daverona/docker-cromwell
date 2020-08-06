@@ -10,70 +10,40 @@ This is a repository for Docker images of [Cromwell](https://github.com/broadins
 
 ## Quick Start
 
-It's recommeded to build your own Docker image for security reason.
-Build one using your UID and GID:
-
-```bash
-git clone https://gitlab.com/daverona/docker/cromwell.git
-cd cromwell
-docker image build \
-  --build-arg CROMWELL_UID="$(id -u)" \
-  --build-arg CROMWELL_GID="$(id -g)" \
-  --tag daverona/cromwell \
-  .
-```
-
-If an error occurs, your UID/GID are taken by Alpine system account. Try without GID.
-Remove the source directory after build an image.
-
-> An account `cromwell` which has the same UID and GID as the image builder's is created in the image.
-> All cromwell instances will be run by `cromwell` account.
-
-Run a container:
-
-```bash
-docker container run --rm \
-  daverona/cromwell \
-    cromwell --help
-```
-
-It will show how to use cromwell. Note that `cromwell` on the last line is an *alias* of:
-
-```bash
-java ${JAVA_OPTS} -jar /cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}
-```
-
-
 Run cromwell in server mode with default configuration:
 
 ```bash
 docker container run --rm \
   --detach \
+  --env CROMWELL_UID="$(id -u)" \
+  --env CROMWELL_GID="$(id -g)" \
   --publish 80:8000 \
-  --volume $PWD/data:/data \
+  --volume "${PWD}/data:/data" \
   daverona/cromwell
 ```
 
-Then visit [http://localhost](http://localhost).
-If you submit a workflow, the output will be generated under `$PWD/data` directory on the host.
-Make sure that `$PWD/data` is readable and writable by the user who built the image on the host.
-(Otherwise cromwell won't be able to write any output to `$PWD/data` on the host.)
-Note that if the command is *omitted*, cromwell runs in *server* mode by default.
+> Note that if the command is *omitted*, cromwell runs in *server* mode with default parameters, 
+> which is `java ${JAVA_OPTS} -jar /cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}`.
 
-> Note that `cromwell` in the container runs cromwell server and this account accesses to `/data` 
-> in the container, to which `$PWD/data` on the host bind-mounts. Therefore the image builder
-> must be able to read from and write to `$PWD/data` on the host because `cromwell`
-> in the container has the same UID and GID as the image builder's.
+> *cromwell* user account is created in the container when you run a container. This user's 
+> uid (user id) and gid (group id) set with what you passed as `${CROMWELL_UID}` and `${CROMWELL_GID}`.
+
+Then visit [http://localhost](http://localhost).
+If you submit a workflow, the output will be generated under `${PWD}/data` directory on the host.
+Make sure the user with uid=`${CROMWELL_UID}` and gid=`${CROMWELL_GID}` can read and write 
+`${PWD}/data` directory on the host.
 
 To use a custom configuration file, say `app.conf`, run a container:
 
 ```bash
 docker container run --rm \
   --detach \
+  --env CROMWELL_UID="$(id -u)" \
+  --env CROMWELL_GID="$(id -g)" \
   --publish 80:8000 \
-  --env JAVA_OPTS="-Dconfig.file=/cromwell/app.conf" \
-  --volume $PWD/app.conf:/cromwell/app.conf:ro \
-  --volume $PWD/data:/data \
+  --env JAVA_OPTS="-Dconfig.file=/home/cromwell/app.conf" \
+  --volume "${PWD}/app.conf:/home/cromwell/app.conf:ro" \
+  --volume "${PWD}/data:/data" \
   daverona/cromwell
 ```
 
@@ -85,8 +55,8 @@ In this section we show how to log in to remote (or local) host and run workflow
 
 Since cromwell runs in a Docker container on your host, your host is surely 
 able to run workflows which utilize Docker images. The catch is, since cromwell runs in a container,
-a workflow cannot create another container in the cromwell container. However `cromwell` can log in 
-to your host to run the workflow container.
+a workflow cannot create another container in the cromwell container. However user `cromwell` in the container
+can log in to your host to run the workflow container.
 
 For `cromwell` account to log in without password to your host, 
 `cromwell`'s RSA public key needs to be added to your `${HOME}/.ssh/authorized_keys` file on the host:
@@ -94,7 +64,7 @@ For `cromwell` account to log in without password to your host,
 ```bash
 docker container run --rm \
   daverona/cromwell \
-    cat /cromwell/.ssh/id_rsa.pub \
+    cat /home/cromwell/.ssh/id_rsa.pub \
 >> ~/.ssh/authorized_keys
 ```
 
@@ -133,19 +103,21 @@ Run a cromwell container to allow workflows to use Docker images on the host:
 ```bash
 docker container run --rm \
   --detach \
+  --env CROMWELL_UID="$(id -u)" \
+  --env CROMWELL_GID="$(id -g)" \
   --publish 80:8000 \
-  --env JAVA_OPTS="-Dconfig.file=/cromwell/app.conf" \
-  --volume $PWD/known_hosts:/cromwell/.ssh/known_hosts:ro \
-  --volume $PWD/app.conf:/cromwell/app.conf:ro \
-  --volume $PWD/data:$PWD/data \
-  --workdir $PWD/data \
+  --env JAVA_OPTS="-Dconfig.file=/home/cromwell/app.conf" \
+  --volume "${PWD}/known_hosts:/home/cromwell/.ssh/known_hosts:ro" \
+  --volume "${PWD}/app.conf:/home/cromwell/app.conf:ro" \
+  --volume "${PWD}/data:${PWD}/data" \
+  --workdir "${PWD}/data" \
   daverona/cromwell
 ```
 
-Make sure that `$PWD/data` is readable/writable by the image builder.
+Make sure that `${PWD}/data` is readable/writable by the user with specified uid and gid.
 
-> Note that the data directory in cromwell container (i.e. `$PWD/data` on the right hand side), 
-> which cromwell reads from and writes to, is the same as the data directory on the host (`$PWD/data` on the left hand side). 
+> Note that the data directory in cromwell container (i.e. `${PWD}/data` on the right hand side), 
+> which cromwell reads from and writes to, is the same as the data directory on the host (`${PWD}/data` on the left hand side). 
 > This restriction is to share the same directory among cromwell container and workflow's containers.
 > A workflow's containers point to this directory with `${cwd}` in `app.conf` file.
 
@@ -163,7 +135,7 @@ To do so, run this (after replace `slurmctld.example` and `tom` with the address
 ```bash
 docker container run --rm \
   daverona/cromwell \
-    cat /cromwell/.ssh/id_rsa.pub \
+    cat /home/cromwell/.ssh/id_rsa.pub \
 | ssh tom@slurmctld.example 'cat >> .ssh/authorized_keys'
 # enter password if asked
 ```
@@ -229,17 +201,19 @@ To run a workflow using slurm:
 ```bash
 docker container run --rm \
   --detach \
+  --env CROMWELL_UID="$(id -u)" \
+  --env CROMWELL_GID="$(id -g)" \
   --publish 80:8000 \
-  --env JAVA_OPTS="-Dconfig.file=/cromwell/app.conf" \
-  --volume $PWD/known_hosts:/cromwell/.ssh/known_hosts:ro \
-  --volume $PWD/app.conf:/cromwell/app.conf:ro \
-  --volume $PWD/data:$PWD/data \
-  --workdir $PWD/data \
+  --env JAVA_OPTS="-Dconfig.file=/home/cromwell/app.conf" \
+  --volume "${PWD}/known_hosts:/home/cromwell/.ssh/known_hosts:ro" \
+  --volume "${PWD}/app.conf:/home/cromwell/app.conf:ro" \
+  --volume "${PWD}/data:${PWD}/data" \
+  --workdir "${PWD}/data" \
   daverona/cromwell
 ```
 
-> Note that the data directory in cromwell container (i.e. `$PWD/data` on the right hand side), 
-> which cromwell reads from and writes to, is the same as the data directory on the host (`$PWD/data` on the left hand side). 
+> Note that the data directory in cromwell container (i.e. `${PWD}/data` on the right hand side), 
+> which cromwell reads from and writes to, is the same as the data directory on the host (`${PWD}/data` on the left hand side). 
 > This restriction is to share the same directory among cromwell container, workflow's containers, and slurm workers.
 > A workflow's containers point to this directory with `${cwd}` in `app.conf` file.
 
@@ -247,4 +221,3 @@ docker container run --rm \
 
 * Cromwell: [https://cromwell.readthedocs.io/en/stable/](https://cromwell.readthedocs.io/en/stable/)
 * Cromwell repository: [https://github.com/broadinstitute/cromwell](https://github.com/broadinstitute/cromwell)
-
