@@ -23,9 +23,9 @@ docker container run --rm \
 ```
 
 > Note that account `cromwell` is created when the container starts. `cromwell`'s uid and gid
-> set to what you passed in `${CROMWELL_UID}` and `${CROMWELL_GID}`. And this `cromwell` user
+> set to whatever you passed in `${CROMWELL_UID}` and `${CROMWELL_GID}`. And this `cromwell` user
 > runs cromwell. In this case, since the command is *omitted*, cromwell runs in *server* mode with 
-> default parameters: `java ${JAVA_OPTS} -jar /cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}`.
+> default parameters: `java ${JAVA_OPTS} -jar /home/cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}`.
 
 Then visit [http://localhost](http://localhost).
 If you submit a workflow, the output will be generated under `${PWD}/data` directory on the host.
@@ -53,7 +53,7 @@ In this section we show how to log in to remote (or local) host and run workflow
 ### Local Backend with Docker
 
 Since cromwell runs in a Docker container on your host, your host is surely 
-able to run workflows which utilize Docker images. The catch is, since cromwell runs in a container,
+able to run workflows which use Docker images. The catch is, since cromwell runs in a container,
 a workflow cannot create another container in the cromwell container. However user `cromwell` in the container
 can log in to your host to run the workflow container.
 
@@ -115,10 +115,10 @@ docker container run --rm \
 
 Make sure that `${PWD}/data` is readable/writable by the user with specified uid and gid.
 
-> Note that the data directory in cromwell container (i.e. `${PWD}/data` on the right hand side), 
-> which cromwell reads from and writes to, is the same as the data directory on the host (`${PWD}/data` on the left hand side). 
+> Note that the data directory in cromwell container (`${PWD}/data` on the right hand side), 
+> which cromwell reads and writes, is the same as the data directory on the host (`${PWD}/data` on the left hand side). 
 > This restriction is to share the same directory among cromwell container and workflow's containers.
-> A workflow's containers point to this directory with `${cwd}` in `app.conf` file.
+> Workflow's containers point to this directory with `${cwd}` in `app.conf` file.
 
 ### Slurm Backend
 
@@ -211,7 +211,7 @@ docker container run --rm \
   daverona/cromwell
 ```
 
-> Note that the data directory in cromwell container (i.e. `${PWD}/data` on the right hand side), 
+> Note that the data directory in cromwell container (`${PWD}/data` on the right hand side), 
 > which cromwell reads from and writes to, is the same as the data directory on the host (`${PWD}/data` on the left hand side). 
 > This restriction is to share the same directory among cromwell container, workflow's containers, and slurm workers.
 > A workflow's containers point to this directory with `${cwd}` in `app.conf` file.
