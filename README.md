@@ -22,11 +22,10 @@ docker container run --rm \
   daverona/cromwell
 ```
 
-> Note that if the command is *omitted*, cromwell runs in *server* mode with default parameters, 
+> Note that account `cromwell` is created when the container starts. `cromwell`'s uid (user id) 
+> and gid (group id) set with what you passed as `${CROMWELL_UID}` and `${CROMWELL_GID}`.
+> If the command is *omitted*, cromwell runs in *server* mode with default parameters, 
 > which is `java ${JAVA_OPTS} -jar /cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS}`.
-
-> *cromwell* user account is created in the container when you run a container. This user's 
-> uid (user id) and gid (group id) set with what you passed as `${CROMWELL_UID}` and `${CROMWELL_GID}`.
 
 Then visit [http://localhost](http://localhost).
 If you submit a workflow, the output will be generated under `${PWD}/data` directory on the host.
