@@ -11,14 +11,15 @@ RUN apk add --no-cache \
   # Create SSH RSA key pair and data directory
   && mkdir -p /home/cromwell/.ssh && chmod 700 /home/cromwell/.ssh \
   && ssh-keygen -t rsa -f /home/cromwell/.ssh/id_rsa -q -N "" -b 4096 \
-  && mkdir -p /data \
-  && cp /etc/profile /home/cromwell/.profile
+  && cp /etc/profile /home/cromwell/.profile \
+  && mkdir -p /data
 
 ARG CROMWELL_VERSION=51
 ENV CROMWELL_VERSION=$CROMWELL_VERSION
 
 # Install cromwell
-RUN wget -q -O "/home/cromwell/cromwell-${CROMWELL_VERSION}.jar" "https://github.com/broadinstitute/cromwell/releases/download/${CROMWELL_VERSION}/cromwell-${CROMWELL_VERSION}.jar"
+RUN wget -q -O "/home/cromwell/cromwell-${CROMWELL_VERSION}.jar" \
+    "https://github.com/broadinstitute/cromwell/releases/download/${CROMWELL_VERSION}/cromwell-${CROMWELL_VERSION}.jar"
 
 # Configure miscellanea
 COPY docker-entrypoint.sh /docker-entrypoint.sh
