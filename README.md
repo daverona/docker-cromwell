@@ -125,7 +125,7 @@ Make sure that `${PWD}/data` is readable/writable by the user with specified uid
 For this to work, the following conditions must be satisfied:
 
 * Disk volume is shared among hosts running slurm and the host running cromwell
-* You have an account on the host running slumrctld daemon
+* You have an account on the host running slurmctld daemon
 
 For `cromwell` account to log in without password to the slurm host,
 `cromwell`'s RSA public key needs to be added to your `${HOME}/.ssh/authorized_keys` file on the host.
