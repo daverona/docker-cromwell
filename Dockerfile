@@ -14,7 +14,7 @@ RUN apk add --no-cache \
   && cp /etc/profile /home/cromwell/.profile \
   && mkdir -p /data
 
-ARG CROMWELL_VERSION=51
+ARG CROMWELL_VERSION=52
 ENV CROMWELL_VERSION=$CROMWELL_VERSION
 
 # Install cromwell
