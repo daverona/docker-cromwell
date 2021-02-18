@@ -11,17 +11,17 @@ color_reset='\033[0m'
 if [ ! -z "${CROMWELL_GID}" ] && [ ! -z "${CROMWELL_UID}" ]; then
   group="$(getent group "${CROMWELL_GID}" | cut -d: -f1)"
   if [ "${group}" != "" ]; then
-    echo -e "${color_red}gid(${CROMWELL_UID}) is already taken by \"${group}\" in the container.${color_reset}"
-    exit 1
+    echo -e "${color_red}gid(${CROMWELL_GID}) is taken by \"${group}\" in the container.${color_reset}"
+  else
+    addgroup -g ${CROMWELL_GID} cromwell
   fi
-  addgroup -g ${CROMWELL_GID} cromwell
 
   user="$(getent passwd "${CROMWELL_UID}" | cut -d: -f1)"
   if [ "${user}" != "" ]; then
-    echo -e "${color_red}uid(${CROMWELL_UID}) is already taken by \"${user}\" in the container.${color_reset}"
-    exit 1
+    echo -e "${color_red}uid(${CROMWELL_UID}) is taken by \"${user}\" in the container.${color_reset}"
+  else
+    adduser -D -s /bin/bash -h /home/cromwell -u ${CROMWELL_UID} -G cromwell -g "cromwell" cromwell
   fi
-  adduser -D -s /bin/bash -h /home/cromwell -u ${CROMWELL_UID} -G cromwell -g "cromwell" cromwell
 
   gosuer=(gosu cromwell:cromwell)
   chown -R cromwell:cromwell /home/cromwell
