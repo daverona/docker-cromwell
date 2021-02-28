@@ -25,9 +25,9 @@ if [ ! -z "${CROMWELL_GID}" ] && [ ! -z "${CROMWELL_UID}" ]; then
     echo "Created cromwell user using uid=${CROMWELL_UID} in the container."
   fi
 
-  gosuer=(gosu cromwell:cromwell)
   chown -R cromwell:cromwell /home/cromwell
-  chown cromwell:cromwell /data ${PWD}
+  [ ! -z "${CROMWELL_SHARED}" ] && [ -d "${CROMWELL_SHARED}" ] && chown cromwell:cromwell ${CROMWELL_SHARED}
+  gosuer=(gosu cromwell:cromwell)
 fi
 
 set -e
@@ -37,9 +37,9 @@ set -e
 if [ $# -eq 0 ]; then
   [ -z "$*" ] && [ -z "${CROMWELL_ARGS}" ] && CROMWELL_ARGS=server
   echo -e "${color_cyan}Running cromwell using uid=${CROMWELL_UID:-$(id -u)}, gid=${CROMWELL_GID:-$(id -g)} in the container.${color_reset}"
-  echo "Make sure that this user on the host can read and write \"cromwell execution\" and \"workflow log\" directories in the container."
-  echo -e "${color_cyan}Executing \"java ${JAVA_OPTS} -jar /home/cromwell/cromwell-${CROMWELL_VERSION}.jar ${CROMWELL_ARGS} $@\"...${color_reset}"
-  exec "${gosuer[@]}" java ${JAVA_OPTS} -jar "/home/cromwell/cromwell-${CROMWELL_VERSION}.jar" ${CROMWELL_ARGS} "$@"
+  echo "Make sure that this user can read and write \"cromwell-executions\" and \"cromwell-workflow-logs\" directories on the host."
+  echo -e "${color_cyan}Executing \"java ${JAVA_OPTS} -jar /usr/local/java/cromwell.jar ${CROMWELL_ARGS} $@\"...${color_reset}"
+  exec "${gosuer[@]}" java ${JAVA_OPTS} -jar "/usr/local/java/cromwell.jar" ${CROMWELL_ARGS} "$@"
 fi
 
 exec "${gosuer[@]}" "$@"
