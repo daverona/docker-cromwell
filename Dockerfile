@@ -13,8 +13,8 @@ RUN apk add --no-cache \
   && ssh-keygen -t rsa -f /home/cromwell/.ssh/id_rsa -q -N "" -b 4096 \
   && cp /etc/profile /home/cromwell/.profile
 
-ARG CROMWELL_VERSION=57
-ARG WOMTOOL_VERSION=57
+ARG CROMWELL_VERSION=47
+ARG WOMTOOL_VERSION=47
 ENV CROMWELL_VERSION=$CROMWELL_VERSION
 ENV WOMTOOL_VERSION=$WOMTOOL_VERSION
 
