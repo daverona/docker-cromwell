@@ -26,7 +26,7 @@ if [ ! -z "${CROMWELL_GID}" ] && [ ! -z "${CROMWELL_UID}" ]; then
   fi
 
   chown -R cromwell:cromwell /home/cromwell
-  [ ! -z "${CROMWELL_SHARED}" ] && [ -d "${CROMWELL_SHARED}" ] && chown cromwell:cromwell ${CROMWELL_SHARED}
+  [ ! -z "${CROMWELL_SHARED}" ] && [ -d "${CROMWELL_SHARED}" ] && chown cromwell:cromwell ${CROMWELL_SHARED} || chown cromwell:cromwell ${PWD}
   gosuer=(gosu cromwell:cromwell)
 fi
 
